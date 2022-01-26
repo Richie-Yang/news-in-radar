@@ -102,3 +102,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Custom for this project
+*.sql
