@@ -27,12 +27,12 @@ module.exports = {
       },
       total_followers: {
         allowNull: false,
-        default: 0,
+        defaultValue: 0,
         type: Sequelize.INTEGER
       },
       total_followings: {
         allowNull: false,
-        default: 0,
+        defaultValue: 0,
         type: Sequelize.INTEGER
       },
       created_at: {
