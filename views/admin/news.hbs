@@ -1,0 +1,28 @@
+<h3>新聞清單</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">標題</th>
+      <th scope="col">出處</th>
+      <th scope="col">發佈時間</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each news}}
+      <tr>
+        <th scope="row">{{this.id}}</th>
+        <td>{{this.title}}</td>
+        <td>{{this.author}}</td>
+        <td>{{this.createdAt}}</td>
+        <td class="d-flex">
+          <a href="/admin/news/{{this.id}}/edit" class="btn btn-primary me-2">編輯</a>
+          <form action="/admin/news/{{this.id}}?_method=DELETE" method="POST">
+            <button class="btn btn-danger">刪除</button>
+          </form>
+        </td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>

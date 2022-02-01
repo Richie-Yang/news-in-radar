@@ -12,15 +12,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      content: {
+      description: {
         allowNull: false,
         type: Sequelize.TEXT
       },
       author: {
-        allowNull: false,
         type: Sequelize.STRING
       },
-      image: {
+      url: {
+        type: Sequelize.STRING
+      },
+      url_to_image: {
         type: Sequelize.STRING
       },
       total_likes: {
@@ -32,6 +34,9 @@ module.exports = {
         allowNull: false,
         defaultValue: 0,
         type: Sequelize.INTEGER
+      },
+      published_at: {
+        type: Sequelize.DATE
       },
       created_at: {
         allowNull: false,

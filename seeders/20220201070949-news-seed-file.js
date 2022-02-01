@@ -15,13 +15,15 @@ module.exports = {
    await queryInterface.bulkInsert('News', 
       Array.from({ length: 100 }, () => ({
         title: faker.lorem.sentence(),
-        content: faker.lorem.paragraphs(),
+        description: faker.lorem.paragraphs(),
         author: faker.company.companyName(),
-        image: faker.image.imageUrl(),
+        url: faker.internet.url(),
+        url_to_image: faker.image.imageUrl(),
         total_likes: 0,
         total_comments: 0,
-        created_at: faker.date.past(),
-        updated_at: faker.date.recent()
+        published_at: faker.date.past(),
+        created_at: new Date(),
+        updated_at: new Date()
       })), {}
    )
   },

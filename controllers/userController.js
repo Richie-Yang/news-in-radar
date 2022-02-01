@@ -8,9 +8,9 @@ module.exports = {
 
   login: (req, res) => {
     const { name } = req.user
-    
+
     req.flash('success_messages', `歡迎回來 ${name}`)
-    return res.redirect('/')
+    return res.redirect('/admin/news')
   },
 
   registerPage: (req, res) => {

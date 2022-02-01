@@ -21,11 +21,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   News.init({
     title: DataTypes.STRING,
-    content: DataTypes.TEXT,
+    description: DataTypes.TEXT,
     author: DataTypes.STRING,
-    image: DataTypes.STRING,
+    url: DataTypes.STRING,
+    urlToImage: DataTypes.STRING,
     totalLikes: DataTypes.INTEGER,
-    totalComments: DataTypes.INTEGER
+    totalComments: DataTypes.INTEGER,
+    publishedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'News',
