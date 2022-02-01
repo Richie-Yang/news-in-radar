@@ -15,22 +15,22 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsToMany(models.News, {
         through: models.Like,
         foreignKey: 'userId',
-        as: 'LikedNewsFromUsers'
+        as: 'LikedNewsForUsers'
       })
       User.belongsToMany(models.Comment, {
         through: models.Like,
         foreignKey: 'userId',
-        as: 'LikedCommentFromUsers'
+        as: 'LikedCommentForUsers'
       })
       User.belongsToMany(models.User, {
         through: models.Followship,
         foreignKey: 'followerId',
-        as: 'FollowingUsers'
+        as: 'Followings'
       })
       User.belongsToMany(models.User, {
         through: models.Followship,
         foreignKey: 'followingId',
-        as: 'FollowedUsers'
+        as: 'Followers'
       })
     }
   }
@@ -38,7 +38,9 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    isAdmin: DataTypes.BOOLEAN
+    isAdmin: DataTypes.BOOLEAN,
+    totalFollowers: DataTypes.INTEGER,
+    totalFollowings: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'User',

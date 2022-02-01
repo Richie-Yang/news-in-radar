@@ -9,12 +9,15 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       content: {
+        allowNull: false,
         type: Sequelize.TEXT
       },
       media: {
         type: Sequelize.STRING
       },
       total_likes: {
+        allowNull: false,
+        defaultValue: 0,
         type: Sequelize.INTEGER
       },
       created_at: {

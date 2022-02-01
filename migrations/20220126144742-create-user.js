@@ -25,6 +25,16 @@ module.exports = {
         defaultValue: false,
         type: Sequelize.BOOLEAN
       },
+      total_followers: {
+        allowNull: false,
+        default: 0,
+        type: Sequelize.INTEGER
+      },
+      total_followings: {
+        allowNull: false,
+        default: 0,
+        type: Sequelize.INTEGER
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE
