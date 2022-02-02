@@ -1,5 +1,5 @@
 <h3>新聞清單</h3>
-<table class="table">
+<table class="table table-hover">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -15,7 +15,7 @@
         <th scope="row">{{this.id}}</th>
         <td>{{this.title}}</td>
         <td>{{this.author}}</td>
-        <td>{{this.createdAt}}</td>
+        <td>{{this.publishedAt}}</td>
         <td class="d-flex">
           <a href="/admin/news/{{this.id}}/edit" class="btn btn-primary me-2">編輯</a>
           <form action="/admin/news/{{this.id}}?_method=DELETE" method="POST">

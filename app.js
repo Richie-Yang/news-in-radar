@@ -2,6 +2,7 @@ const express = require('express')
 const session = require('express-session')
 const flash = require('connect-flash')
 const passport = require('passport')
+const methodOverride = require('method-override')
 const { engine } = require('express-handlebars')
 
 if (process.env.NODE_ENV !== 'production') {
@@ -16,6 +17,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET
 
 app.engine('hbs', engine({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
+app.use(methodOverride('_method'))
 app.use(express.urlencoded({ extended: true }))
 app.use(session({
   secret: SESSION_SECRET,

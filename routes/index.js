@@ -13,6 +13,9 @@ router.get('/register', userController.registerPage)
 router.post('/register', userController.register)
 
 router.get('/admin/news', adminController.getNewsList)
+router.get('/admin/news/:newsId/edit', adminController.editNews)
+router.put('/admin/news/:newsId', adminController.putNews)
+router.delete('/admin/news/:newsId', adminController.deleteNews)
 
 router.get('/', (req, res) => res.redirect('/login'))
 router.use('/', generalErrorHandler)
