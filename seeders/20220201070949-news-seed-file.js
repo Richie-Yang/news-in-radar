@@ -21,6 +21,7 @@ module.exports = {
         url_to_image: faker.image.imageUrl(),
         total_likes: 0,
         total_comments: 0,
+        is_seed: true,
         published_at: faker.date.past(),
         created_at: new Date(),
         updated_at: new Date()
@@ -35,6 +36,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete('News', null, {})
+    await queryInterface.bulkDelete('News', { is_seed: true }, {})
   }
 };

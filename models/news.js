@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     urlToImage: DataTypes.STRING,
     totalLikes: DataTypes.INTEGER,
     totalComments: DataTypes.INTEGER,
+    isSeed: DataTypes.BOOLEAN,
     publishedAt: DataTypes.DATE
   }, {
     sequelize,
