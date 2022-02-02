@@ -12,6 +12,13 @@ html, body {
   min-height: 500px;
 }
 
+#news-list .card-img-top {
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+  /* transition: all ease-out .3s; */
+}
+
 #news-list h5, #news-list p {
   display: -webkit-box;
   -webkit-box-orient: vertical;

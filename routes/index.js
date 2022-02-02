@@ -7,6 +7,8 @@ const newsController = require('../controllers/newsController')
 const { authenticated, authenticatedAdmin } = require('../middleware/auth')
 const { generalErrorHandler } = require('../middleware/error-handler')
 
+router.use('/', newsController.genNewsList)
+
 router.get('/admin/news', adminController.getNewsList)
 router.get('/admin/news/:newsId/edit', adminController.editNews)
 router.put('/admin/news/:newsId', adminController.putNews)
