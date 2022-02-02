@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+#news-list .card {
+  width: auto;
+  min-height: 500px;
+}
+
+#news-list h5, #news-list p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#news-list h5 {
+  -webkit-line-clamp: 2;
+}
+
+#news-list p {
+  -webkit-line-clamp: 3;
+}

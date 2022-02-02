@@ -23,6 +23,7 @@ app.engine('hbs', engine({
 app.set('view engine', 'hbs')
 app.use(methodOverride('_method'))
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
 app.use(session({
   secret: SESSION_SECRET,
   resave: false,
