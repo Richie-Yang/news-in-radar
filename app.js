@@ -15,7 +15,11 @@ const app = express()
 const PORT = process.env.PORT
 const SESSION_SECRET = process.env.SESSION_SECRET
 
-app.engine('hbs', engine({ defaultLayout: 'main', extname: '.hbs' }))
+app.engine('hbs', engine({
+  defaultLayout: 'main',
+  extname: '.hbs',
+  helpers: require('./helpers/handlebars-helpers')
+}))
 app.set('view engine', 'hbs')
 app.use(methodOverride('_method'))
 app.use(express.urlencoded({ extended: true }))
