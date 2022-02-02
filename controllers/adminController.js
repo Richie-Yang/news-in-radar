@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { News } = require('../models')
+const { News, User } = require('../models')
 
 module.exports = {
   getNewsList: (req, res, next) => {
@@ -67,6 +67,62 @@ module.exports = {
       })
       .then(() => {
         req.flash('success_messages', '新聞內容已經成功刪除')
+        return res.redirect('back')
+      })
+      .catch(err => next(err))
+  },
+
+  getUsers: (req, res, next) => {
+    return User.findAll({ raw: true })
+      .then(users => {
+        users = users.map(user => ({
+          ...user,
+          isRoot: user.name === 'root' && user.email === 'root@example.com'
+        }))
+        res.render('admin/users', { users })
+      })
+      .catch(err => next(err))
+  },
+
+  patchUser: (req, res, next) => {
+    const { userId } = req.params
+
+    return User.findByPk(userId)
+      .then(user => {
+        if (!user) throw new Error('這個使用者已不存在')
+
+        const { name, email, isAdmin } = user
+        if (name === 'root' && email === 'root@example.com') {
+          throw new Error('管理者權限是禁止修改的')
+        }
+
+        return user.update({
+          isAdmin: !isAdmin
+        })
+      })
+      .then(() => {
+        req.flash('success_messages', '使用者權限調整成功')
+        res.redirect('back')
+      })
+      .catch(err => next(err))
+  },
+
+  deleteUser: (req, res, next) => {
+    const { userId } = req.params
+
+    return User.findByPk(userId)
+      .then(user => {
+        if (!user) throw new Error('使用者已不存在')
+
+        const { name, email } = user
+        if (name === 'root' && email === 'root@example.com') {
+          throw new Error('管理者權限是禁止刪除的')
+        }
+
+        return user.destroy()
+      })
+      .then(() => {
+        req.flash('success_messages', '使用者已經成功刪除')
         return res.redirect('back')
       })
       .catch(err => next(err))

@@ -1,0 +1,43 @@
+<h3>會員清單</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">名稱</th>
+      <th scope="col">電子信箱</th>
+      <th scope="col">權限</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each users}}
+    <tr>
+      <th scope="row">{{this.id}}</th>
+      <td>{{this.name}}</td>
+      <td>{{this.email}}</td>
+      {{#if this.isAdmin}}
+        <td>管理員</td>
+      {{else}}
+        <td>使用者</td>
+      {{/if}}
+      <td class="d-flex">
+        {{#if this.isRoot}}
+        <form action="/admin/users/{{this.id}}?_method=Patch" method="POST">
+          <button class="btn btn-primary me-2 disabled">調整權限</button>
+        </form>
+        <form action="/admin/users/{{this.id}}?_method=DELETE" method="POST">
+          <button class="btn btn-danger disabled">刪除</button>
+        </form>
+        {{else}}
+        <form action="/admin/users/{{this.id}}?_method=Patch" method="POST">
+          <button class="btn btn-primary me-2">調整權限</button>
+        </form>
+        <form action="/admin/users/{{this.id}}?_method=DELETE" method="POST">
+          <button class="btn btn-danger">刪除</button>
+        </form>
+        {{/if}}
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

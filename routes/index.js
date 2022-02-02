@@ -17,6 +17,10 @@ router.get('/admin/news/:newsId/edit', adminController.editNews)
 router.put('/admin/news/:newsId', adminController.putNews)
 router.delete('/admin/news/:newsId', adminController.deleteNews)
 
+router.get('/admin/users', adminController.getUsers)
+router.patch('/admin/users/:userId', adminController.patchUser)
+router.delete('/admin/users/:userId', adminController.deleteUser)
+
 router.get('/', (req, res) => res.redirect('/login'))
 router.use('/', generalErrorHandler)
 
