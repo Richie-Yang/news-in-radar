@@ -1,6 +1,7 @@
 const moment = require('moment')
 const axios = require('axios')
 const { News } = require('../models')
+const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
   genNewsList: async (req, res, next) => {
@@ -39,8 +40,22 @@ module.exports = {
   },
 
   getNewsList: (req, res, next) => {
-    return News.findAll({ raw: true })
-      .then(news => res.render('news', { news }))
+    const page = Number(req.query.page) || 1
+    const limit = 9
+    const offset = getOffset(page, limit)
+
+    return News.findAndCountAll({
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset,
+      raw: true
+    })
+      .then(({ count, rows }) => {
+        res.render('news', {
+          news: rows,
+          pagination: getPagination(page, limit, count)
+        })
+      })
       .catch(err => next(err))
   }
 }
