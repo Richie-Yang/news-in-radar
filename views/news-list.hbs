@@ -1,0 +1,46 @@
+<div id="news-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+  {{#each news}}
+  <div class="col p-2">
+    <a href="/news/{{this.id}}" class="text-decoration-none">
+      <div class="card d-flex flex-column justify-content-between">
+
+        <div class="card-img-top" style="background-image: url('{{this.urlToImage}}');"></div>
+        <div class="card-body d-flex flex-column justify-content-center">
+          <h5 class="card-title">{{this.title}}</h5>
+          <div class="card-footer d-flex justify-content-between">
+            <div class="d-flex flex-column">
+              <code class="me-2">喜歡總數: {{this.totalLikes}}</code>
+              <code>評論總數: {{this.totalComments}}</code>
+            </div>
+
+            <div class="d-flex">
+              <form action="">
+                <button class="btn btn-primary me-2">喜歡</button>
+              </form>
+              <form action="">
+                <button class="btn btn-danger">討厭</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  {{/each}}
+</div>
+
+<nav aria-label="Page navigation">
+  <ul class="pagination justify-content-center">
+    <li class="page-item"><a class="page-link" href="/news?page={{pagination.prev}}">上一頁</a></li>
+    {{#each pagination.pages}}
+      {{#ifCond ../pagination.currentPage this}}
+        <li class="page-item active"><a class="page-link" href="/news?page={{this}}">{{this}}</a></li>
+      {{else}}
+        <li class="page-item"><a class="page-link" href="/news?page={{this}}">{{this}}</a></li>
+      {{/ifCond}}
+    {{/each}}
+    <li class="page-item"><a class="page-link" href="/news?page={{pagination.next}}">下一頁</a></li>
+  </ul>
+</nav>
+
+<br>

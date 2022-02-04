@@ -7,7 +7,7 @@ module.exports = {
   genNewsList: async (req, res, next) => {
     try {
       const now = moment()
-      const PAGE_SIZE = 1
+      const PAGE_SIZE = 18
 
       const news = await News.findOne({
         order: [['createdAt', 'DESC']],
@@ -27,7 +27,8 @@ module.exports = {
       if (data.status !== 'ok') throw new Error('新聞自動化擷取程序出錯')
 
       return await Promise.all(
-        Array.from({ length: PAGE_SIZE }, (_, index) => {
+        Array.from({ length: data.articles.length }, (_, index) => {
+          console.log(data.totalResults, index, data.articles[index].title)
           const {
             title, description, url, urlToImage, publishedAt
           } = data.articles[index]
@@ -61,10 +62,22 @@ module.exports = {
       raw: true
     })
       .then(({ count, rows }) => {
-        res.render('news', {
+        res.render('news-list', {
           news: rows,
           pagination: getPagination(page, limit, count)
         })
+      })
+      .catch(err => next(err))
+  },
+
+  getNews: (req, res, next) => {
+    const { newsId } = req.params
+
+    return News.findByPk(newsId, { raw: true })
+      .then(news => {
+        if (!news) throw new Error('這個新聞並不存在')
+
+        return res.render('news', { news })
       })
       .catch(err => next(err))
   }

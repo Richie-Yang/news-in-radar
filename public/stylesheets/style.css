@@ -9,7 +9,7 @@ html, body {
 
 #news-list .card {
   width: auto;
-  min-height: 500px;
+  min-height: 400px;
 }
 
 #news-list .card-img-top {
@@ -19,7 +19,7 @@ html, body {
   /* transition: all ease-out .3s; */
 }
 
-#news-list h5, #news-list p {
+#news-list h5 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -29,6 +29,29 @@ html, body {
   -webkit-line-clamp: 2;
 }
 
-#news-list p {
-  -webkit-line-clamp: 3;
+#news #news-image {
+  width: 100%;
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+  #news #news-image {
+    width: 75%;
+    height: 500px;
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+  #news #news-image {
+    width: 75%;
+    height: 500px;
+    background-size: cover;
+    background-position: center;
+  }
 }

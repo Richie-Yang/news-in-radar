@@ -1,44 +1,20 @@
-<div id="news-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
-  {{#each news}}
-  <div class="col p-2">
-    <a href="{{this.url}}" target="_blank" class="text-decoration-none">
-      <div class="card d-flex flex-column justify-content-between">
+<div class="row">
+  <div id="news" class="col-12 col-md-8 text-center">
+    <h4>{{news.title}}</h4>
+    <div id="news-image" class="mx-auto" style="background-image: url('{{news.urlToImage}}');"></div>
+    <div>
+      <a href="{{news.url}}" target="_blank">詳情</a>
+      <p>來源出處: {{news.author}}</p>
+      <p>{{news.description}}</p>
+    </div>
 
-        <div class="card-img-top" style="background-image: url('{{this.urlToImage}}');"></div>
-        <div class="card-body d-flex flex-column justify-content-center">
-          <h5 class="card-title">{{this.title}}</h5>
-          <code>喜歡總數: {{this.totalLikes}}</code>
-          <code>評論總數: {{this.totalComments}}</code>
-          <p class="card-text">{{this.description}}</p>
-        </div>
-
-        <div class="card-footer d-flex">
-          <a href="" class="btn btn-info me-2">評論</a>
-          <form action="">
-            <button class="btn btn-primary me-2">喜歡</button>
-          </form>
-          <form action="">
-            <button class="btn btn-danger">討厭</button>
-          </form>
-        </div>
-      </div>
-    </a>
+    <div>
+      <h5>評論</h5>
+    </div>
   </div>
-  {{/each}}
+
+  <div class="col-12 col-md-4">
+
+  </div>
 </div>
 
-<nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center">
-    <li class="page-item"><a class="page-link" href="/news?page={{pagination.prev}}">上一頁</a></li>
-    {{#each pagination.pages}}
-      {{#ifCond ../pagination.currentPage this}}
-        <li class="page-item active"><a class="page-link" href="/news?page={{this}}">{{this}}</a></li>
-      {{else}}
-        <li class="page-item"><a class="page-link" href="/news?page={{this}}">{{this}}</a></li>
-      {{/ifCond}}
-    {{/each}}
-    <li class="page-item"><a class="page-link" href="/news?page={{pagination.next}}">下一頁</a></li>
-  </ul>
-</nav>
-
-<br>

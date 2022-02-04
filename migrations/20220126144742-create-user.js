@@ -25,6 +25,11 @@ module.exports = {
         defaultValue: false,
         type: Sequelize.BOOLEAN
       },
+      is_seed: {
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN
+      },
       total_followers: {
         allowNull: false,
         defaultValue: 0,

@@ -25,6 +25,7 @@ router.get('/register', userController.registerPage)
 router.post('/register', userController.register)
 
 router.get('/news', newsController.getNewsList)
+router.get('/news/:newsId', newsController.getNews)
 
 router.get('/', (req, res) => res.redirect('/news'))
 router.use('/', generalErrorHandler)

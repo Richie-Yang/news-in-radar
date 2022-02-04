@@ -20,6 +20,11 @@ module.exports = {
         defaultValue: 0,
         type: Sequelize.INTEGER
       },
+      is_seed: {
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE

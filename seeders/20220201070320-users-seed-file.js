@@ -18,6 +18,7 @@ module.exports = {
        email: 'root@example.com',
        password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
        is_admin: true,
+       is_seed: true,
        total_followers: 0,
        total_followings: 0,
        created_at: new Date(),
@@ -28,6 +29,7 @@ module.exports = {
        email: 'user1@example.com',
        password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
        is_admin: false,
+       is_seed: true,
        total_followers: 0,
        total_followings: 0,
        created_at: new Date(),
@@ -38,6 +40,7 @@ module.exports = {
        email: 'user2@example.com',
        password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
        is_admin: false,
+       is_seed: true,
        total_followers: 0,
        total_followings: 0,
        created_at: new Date(),
@@ -53,6 +56,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete('Users', null, {})
+    await queryInterface.bulkDelete('Users', { is_seed: true }, {})
   }
 };
