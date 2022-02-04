@@ -48,5 +48,11 @@ module.exports = {
         res.redirect('/login')
       })
       .catch(err => next(err))
+  },
+
+  logout: (req, res) => {
+    req.flash('success_messages', '你已經成功登出了')
+    req.logout()
+    return res.redirect('/login')
   }
 }

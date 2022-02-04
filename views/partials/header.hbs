@@ -6,18 +6,33 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="/">首頁</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/news">後台系統</a>
-        </li>
-      </ul>
-      <form class="d-flex">
+      <form class="d-flex me-auto">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
+
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">首頁</a>
+        </li>
+        {{#if user.isAdmin}}
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/news">後台系統</a>
+        </li>
+        {{/if}}
+        {{#if isAuthenticated}}
+        <li class="nav-item">
+          <a class="nav-link" href="/logout">登出</a>
+        </li>
+        {{else}}
+        <li class="nav-item">
+          <a class="nav-link" href="/login">登入</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/register">註冊</a>
+        </li>
+        {{/if}}
+      </ul>
     </div>
   </div>
 </nav>
