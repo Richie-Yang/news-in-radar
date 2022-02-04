@@ -12,6 +12,11 @@
       </form>
 
       <ul class="navbar-nav mb-2 mb-lg-0">
+        {{#if isAuthenticated}}
+        <li class="nav-item">
+          <a class="nav-link disabled text-dark" href="/">歡迎回來! {{user.name}}</a>
+        </li>
+        {{/if}}
         <li class="nav-item">
           <a class="nav-link" href="/">首頁</a>
         </li>
@@ -27,9 +32,6 @@
         {{else}}
         <li class="nav-item">
           <a class="nav-link" href="/login">登入</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/register">註冊</a>
         </li>
         {{/if}}
       </ul>
