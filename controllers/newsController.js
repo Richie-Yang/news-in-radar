@@ -1,6 +1,7 @@
 const moment = require('moment')
 const axios = require('axios')
-const { News } = require('../models')
+const { Op } = require("sequelize")
+const { News, Comment, User } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
@@ -26,9 +27,8 @@ module.exports = {
       const { data } = await axios.get(requestUrl)
       if (data.status !== 'ok') throw new Error('新聞自動化擷取程序出錯')
 
-      return await Promise.all(
+      await Promise.allSettled(
         Array.from({ length: data.articles.length }, (_, index) => {
-          console.log(data.totalResults, index, data.articles[index].title)
           const {
             title, description, url, urlToImage, publishedAt
           } = data.articles[index]
@@ -47,6 +47,7 @@ module.exports = {
             })
         })
       )
+      next()
     } catch (err) { next(err) }
   },
 
@@ -70,15 +71,30 @@ module.exports = {
       .catch(err => next(err))
   },
 
-  getNews: (req, res, next) => {
-    const { newsId } = req.params
+  getNews: async (req, res, next) => {
+    try {
+      const { newsId } = req.params
 
-    return News.findByPk(newsId, { raw: true })
-      .then(news => {
-        if (!news) throw new Error('這個新聞並不存在')
-
-        return res.render('news', { news })
+      let news = await News.findByPk(newsId, {
+        include: { model: Comment, include: User },
+        nest: true
       })
-      .catch(err => next(err))
+
+      if (!news) throw new Error('這個新聞並不存在')
+      news = news.toJSON()
+
+      // const relatedNews = await News.findAll({
+      //   where: { title: { [Op.like]: `%${news.title.substring(0, 5)}%` } },
+      //   raw: true
+      // })
+
+      let relatedNews = await News.findAll({
+        where: { author: news.author, id: { [Op.ne]: news.id } },
+        raw: true
+      })
+
+      return res.render('news', { news, relatedNews })
+
+    } catch (err) { next(err) }
   }
 }

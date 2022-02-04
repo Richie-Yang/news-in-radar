@@ -13,7 +13,7 @@ module.exports = {
      * }], {});
     */
    await queryInterface.bulkInsert('News', 
-      Array.from({ length: 100 }, () => ({
+      Array.from({ length: 27 }, () => ({
         title: faker.lorem.sentence(),
         description: faker.lorem.paragraphs(),
         author: faker.company.companyName(),

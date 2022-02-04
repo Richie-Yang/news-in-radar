@@ -24,10 +24,10 @@ module.exports = {
    ])
 
    await queryInterface.bulkInsert('Comments', 
-    Array.from({ length: 100 }, () => ({
+    Array.from({ length: 200 }, () => ({
       content: faker.lorem.text(),
-      user_id: Math.floor(Math.random() * users.length),
-      news_id: Math.floor(Math.random() * news.length),
+      user_id: users[Math.floor(Math.random() * users.length)].id,
+      news_id: news[Math.floor(Math.random() * news.length)].id,
       is_seed: true,
       created_at: new Date(),
       updated_at: new Date()
