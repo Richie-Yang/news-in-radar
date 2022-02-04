@@ -4,6 +4,7 @@ const passport = require('passport')
 const userController = require('../controllers/userController')
 const adminController = require('../controllers/adminController')
 const newsController = require('../controllers/newsController')
+const commentController = require('../controllers/commentController')
 const { authenticated, authenticatedAdmin } = require('../middleware/auth')
 const { generalErrorHandler } = require('../middleware/error-handler')
 
@@ -25,6 +26,10 @@ router.get('/logout', userController.logout)
 router.get('/register', userController.registerPage)
 router.post('/register', userController.register)
 
+router.get('/news/:newsId/comments/:commentId/edit', authenticated, commentController.editComment)
+router.put('/news/:newsId/comments/:commentId', authenticated, commentController.putComment)
+router.delete('/news/:newsId/comments/:commentId', authenticated, commentController.deleteComment)
+router.post('/news/:newsId/comments', authenticated, commentController.postComment)
 router.get('/news/:newsId', newsController.getNews)
 router.get('/news', newsController.getNewsList)
 

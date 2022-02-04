@@ -1,0 +1,55 @@
+<div>
+  <h5>評論</h5>
+
+  {{#each news.Comments}}
+    <div class="d-flex justify-content-between">
+      <div class="d-flex">
+        <h5 class="me-2">{{this.User.name}}</h5>
+        <p class="m-0 align-self-center">commented at {{fromNow this.updatedAt}}: </p>
+      </div>
+
+      <code>喜歡總數: {{this.totalLikes}}</code>
+    </div>
+
+    {{#ifCond this.id ../comment.id}}
+      <form action="/news/{{../news.id}}/comments/{{this.id}}?_method=PUT" method="POST">
+        <textarea class="form-control mb-3" placeholder="Leave a comment here" id="comment" style="height: 100px"
+        name="comment">{{this.content}}</textarea>
+        <button type="submit" class="btn btn-primary">儲存</button>
+      </form>
+    {{else}}
+      <p>{{this.content}}</p>
+    {{/ifCond}}
+
+    <br>
+
+    <div class="d-flex">
+      {{#ifCond this.userId ../user.id}}
+        {{#ifCond this.id ../comment.id}}
+        {{else}}
+        <a href="/news/{{../news.id}}/comments/{{this.id}}/edit" class="btn btn-info me-2">編輯</a>
+        <form action="/news/{{../news.id}}/comments/{{this.id}}?_method=DELETE" method="POST">
+          <button type="submit" class="btn btn-danger">刪除</button>
+        </form>
+        {{/ifCond}}
+      {{else}}
+      <form action="">
+        <button class="btn btn-primary me-2">喜歡</button>
+      </form>
+      <form action="">
+        <button class="btn btn-danger">討厭</button>
+      </form>
+      {{/ifCond}}
+    </div>
+    <hr>
+  {{/each}}
+
+  <form action="/news/{{news.id}}/comments" method="POST" class="mb-3">
+    <div class="form-floating mb-3">
+      <textarea class="form-control" placeholder="Leave a comment here" id="comment" style="height: 100px"
+        name="comment"></textarea>
+      <label for="comment">評論</label>
+    </div>
+    <button type="submit" class="btn btn-primary">留言</button>
+  </form>
+</div>

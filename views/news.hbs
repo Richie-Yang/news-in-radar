@@ -14,38 +14,7 @@
 
     <hr>
 
-    <div>
-      <h5>評論</h5>
-      {{#each news.Comments}}
-      <div class="d-flex justify-content-between">
-        <div class="d-flex">
-          <h5 class="me-2">{{this.User.name}}</h5>
-          <p class="m-0 align-self-center">commented at {{fromNow this.updatedAt}}: </p>
-        </div>
-
-        <code>喜歡總數: {{this.totalLikes}}</code>
-      </div>
-      <p>{{this.content}}</p>
-      <div class="d-flex">
-        <form action="">
-          <button class="btn btn-primary me-2">喜歡</button>
-        </form>
-        <form action="">
-          <button class="btn btn-danger">討厭</button>
-        </form>
-      </div>
-      <hr>
-      {{/each}}
-
-      <form action="" class="mb-3">
-        <div class="form-floating mb-3">
-          <textarea class="form-control" placeholder="Leave a comment here" id="comment"
-            style="height: 100px"></textarea>
-          <label for="comment">評論</label>
-        </div>
-        <button class="btn btn-primary">留下評論</button>
-      </form>
-    </div>
+    {{> comments}}
   </div>
 
   <div class="col-12 col-md-4">

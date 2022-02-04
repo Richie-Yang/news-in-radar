@@ -74,6 +74,7 @@ module.exports = {
   getNews: async (req, res, next) => {
     try {
       const { newsId } = req.params
+      const userId = req.user?.id || null
 
       let news = await News.findByPk(newsId, {
         include: { model: Comment, include: User },
@@ -81,7 +82,11 @@ module.exports = {
       })
 
       if (!news) throw new Error('這個新聞並不存在')
-      news = news.toJSON()
+
+      news = {
+        ...news.toJSON(),
+        isEditable: news.Comments.some(c => c.userId === userId)
+      }
 
       // const relatedNews = await News.findAll({
       //   where: { title: { [Op.like]: `%${news.title.substring(0, 5)}%` } },
