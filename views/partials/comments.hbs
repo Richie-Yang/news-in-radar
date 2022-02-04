@@ -23,7 +23,7 @@
 
     <br>
 
-    <div class="d-flex">
+    <div class="d-flex justify-content-end">
       {{#ifCond this.userId ../user.id}}
         {{#ifCond this.id ../comment.id}}
         {{else}}
@@ -33,12 +33,15 @@
         </form>
         {{/ifCond}}
       {{else}}
-      <form action="">
-        <button class="btn btn-primary me-2">喜歡</button>
-      </form>
-      <form action="">
-        <button class="btn btn-danger">討厭</button>
-      </form>
+      {{#if this.isLiked}}
+        <form action="/comments/{{this.id}}/likes?_method=DELETE" method="POST">
+          <button class="btn btn-danger">討厭</button>
+        </form>
+      {{else}}
+        <form action="/comments/{{this.id}}/likes" method="POST">
+          <button class="btn btn-primary">喜歡</button>
+        </form>
+      {{/if}}
       {{/ifCond}}
     </div>
     <hr>

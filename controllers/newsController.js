@@ -1,7 +1,7 @@
 const moment = require('moment')
 const axios = require('axios')
 const { Op } = require("sequelize")
-const { News, Comment, User } = require('../models')
+const { News, Comment, User, Like } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
@@ -63,6 +63,12 @@ module.exports = {
       raw: true
     })
       .then(({ count, rows }) => {
+        const likedNewsIdArray = req.user?.LikedNewsForUsers.map(likedNews => likedNews.id) || []
+        rows = rows.map(item => ({
+          ...item,
+          isLiked: likedNewsIdArray.some(likedNewsId => likedNewsId === item.id)
+        }))
+
         res.render('news-list', {
           news: rows,
           pagination: getPagination(page, limit, count)
@@ -82,11 +88,18 @@ module.exports = {
       })
 
       if (!news) throw new Error('這個新聞並不存在')
+      const likedCommentsIdArray = req.user?.LikedCommentForUsers.map(likedComment => likedComment.id) || []
 
       news = {
         ...news.toJSON(),
-        isEditable: news.Comments.some(c => c.userId === userId)
+        isEditable: news.Comments.some(c => c.userId === userId),
       }
+
+      news.Comments.forEach((comment, index, array) => {
+        array[index].isLiked = likedCommentsIdArray.some(
+          likedCommentId => likedCommentId === comment.id
+        )
+      })
 
       // const relatedNews = await News.findAll({
       //   where: { title: { [Op.like]: `%${news.title.substring(0, 5)}%` } },
@@ -95,10 +108,61 @@ module.exports = {
 
       let relatedNews = await News.findAll({
         where: { author: news.author, id: { [Op.ne]: news.id } },
+        limit: 5,
         raw: true
       })
 
       return res.render('news', { news, relatedNews })
+
+    } catch (err) { next(err) }
+  },
+
+  postLike: async (req, res, next) => {
+    try {
+      const { newsId } = req.params
+      const userId = req.user.id
+
+      const [news, like] = await Promise.all([
+        News.findByPk(newsId),
+        Like.findOne({
+          where: { newsId, userId }
+        })
+      ])
+
+      if (!news) throw new Error('新聞已經不存在了')
+      if (like) throw new Error('你已經喜歡過這則新聞')
+
+      await Promise.all([
+        news.increment('totalLikes', { by: 1 }),
+        Like.create({ newsId, userId })
+      ])
+
+      return res.redirect('back')
+      
+    } catch (err) { next(err) }
+  },
+
+  deleteLike: async (req, res, next) => {
+    try {
+      const { newsId } = req.params
+      const userId = req.user.id
+
+      const [news, like] = await Promise.all([
+        News.findByPk(newsId),
+        Like.findOne({
+          where: { newsId, userId }
+        })
+      ])
+
+      if (!news) throw new Error('新聞已經不存在了')
+      if (!like) throw new Error('你尚未喜歡過這則新聞')
+
+      await Promise.all([
+        news.decrement('totalLikes', { by: 1 }),
+        like.destroy()
+      ])
+
+      return res.redirect('back')
 
     } catch (err) { next(err) }
   }

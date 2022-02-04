@@ -14,12 +14,15 @@
             </div>
 
             <div class="d-flex">
-              <form action="">
-                <button class="btn btn-primary me-2">喜歡</button>
-              </form>
-              <form action="">
-                <button class="btn btn-danger">討厭</button>
-              </form>
+              {{#if isLiked}}
+                <form action="/news/{{this.id}}/likes?_method=DELETE" method="POST">
+                  <button class="btn btn-danger">反感</button>
+                </form>
+              {{else}}
+                <form action="/news/{{this.id}}/likes" method="POST">
+                  <button class="btn btn-primary">喜歡</button>
+                </form>
+              {{/if}}
             </div>
           </div>
         </div>

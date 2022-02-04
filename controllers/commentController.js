@@ -1,5 +1,5 @@
 const { Op } = require("sequelize")
-const { Comment, News, User } = require('../models')
+const { Comment, News, User, Like } = require('../models')
 
 module.exports = {
   postComment: async (req, res, next) => {
@@ -100,6 +100,56 @@ module.exports = {
       ])
       
       req.flash('success_messages', '評論已經成功刪除')
+      return res.redirect('back')
+
+    } catch (err) { next(err) }
+  },
+
+  postLike: async (req, res, next) => {
+    try {
+      const { commentId } = req.params
+      const userId = req.user.id
+
+      const [comment, like] = await Promise.all([
+        Comment.findByPk(commentId),
+        Like.findOne({
+          where: { commentId, userId }
+        })
+      ])
+
+      if (!comment) throw new Error('評論已經不存在了')
+      if (like) throw new Error('你已經喜歡過這個評論')
+
+      await Promise.all([
+        comment.increment('totalLikes', { by: 1 }),
+        Like.create({ commentId, userId })
+      ])
+
+      return res.redirect('back')
+
+    } catch (err) { next(err) }
+  },
+
+  deleteLike: async (req, res, next) => {
+    try {
+      const { commentId } = req.params
+      const userId = req.user.id
+
+      const [comment, like] = await Promise.all([
+        Comment.findByPk(commentId),
+        Like.findOne({
+          where: { commentId, userId }
+        })
+      ])
+
+      if (!comment) throw new Error('評論已經不存在了')
+      if (!like) throw new Error('你尚未喜歡過這個評論')
+
+      await Promise.all([
+        comment.decrement('totalLikes', { by: 1 }),
+        like.destroy()
+      ])
+
       return res.redirect('back')
 
     } catch (err) { next(err) }

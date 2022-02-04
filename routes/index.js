@@ -30,6 +30,13 @@ router.get('/news/:newsId/comments/:commentId/edit', authenticated, commentContr
 router.put('/news/:newsId/comments/:commentId', authenticated, commentController.putComment)
 router.delete('/news/:newsId/comments/:commentId', authenticated, commentController.deleteComment)
 router.post('/news/:newsId/comments', authenticated, commentController.postComment)
+
+router.post('/comments/:commentId/likes', authenticated, commentController.postLike)
+router.delete('/comments/:commentId/likes', authenticated, commentController.deleteLike)
+
+router.post('/news/:newsId/likes', authenticated, newsController.postLike)
+router.delete('/news/:newsId/likes', authenticated, newsController.deleteLike)
+
 router.get('/news/:newsId', newsController.getNews)
 router.get('/news', newsController.getNewsList)
 
