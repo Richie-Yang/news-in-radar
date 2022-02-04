@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'newsId',
         as: 'LikedUsersForNews'
       })
+      News.belongsTo(models.Category, { foreignKey: 'categoryId' })
     }
   }
   News.init({
