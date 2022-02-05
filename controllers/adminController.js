@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { News, User } = require('../models')
+const { News, User, Category } = require('../models')
 
 module.exports = {
   getNewsList: (req, res, next) => {
@@ -124,6 +124,75 @@ module.exports = {
       .then(() => {
         req.flash('success_messages', '使用者已經成功刪除')
         return res.redirect('back')
+      })
+      .catch(err => next(err))
+  },
+
+  getCategories: (req, res, next) => {
+    const { categoryId } = req.params
+
+    return Category.findAll({ raw: true })
+      .then(categories => {
+        if (categoryId) {
+          categories = categories.map(category => ({
+            ...category,
+            isEditable: category.id === Number(categoryId)
+          }))
+        }
+
+        return res.render('admin/categories', { categories })
+      })
+      .catch(err => next(err))
+  },
+
+  postCategory: (req, res, next) => {
+    const { name, displayName } = req.body
+
+    if (!name.trim() || !displayName.trim()) {
+      throw new Error('兩個欄位都是必填的')
+    }
+
+    return Category.create({ name, displayName })
+      .then(() => {
+        req.flash('success_messages', '類別已經成功建立')
+        return res.redirect('/admin/categories')
+      })
+      .catch(err => next(err))
+  },
+
+  putCategory: (req, res, next) => {
+    const { categoryId } = req.params
+    const { name, displayName } = req.body
+
+    if (!name.trim() || !displayName.trim()) {
+      throw new Error('兩個欄位都是必填的')
+    }
+
+    return Category.findByPk(categoryId)
+      .then(category => {
+        if (!category) throw new Error('這個類別並不存在')
+
+        return category.update({ name, displayName })
+      })
+      .then(() => {
+        req.flash('success_messages', '類別已經成功修改')
+        return res.redirect('/admin/categories')
+      })
+      .catch(err => next(err))
+  },
+
+  deleteCategory: (req, res, next) => {
+    const { categoryId } = req.params
+
+    return Category.findByPk(categoryId)
+      .then(category => {
+        if (!category) throw new Error('這個類別並不存在')
+
+        return category.destroy()
+      })
+      .then(() => {
+        req.flash('success_messages', '類別已經成功刪除')
+        return res.redirect('/admin/categories')
       })
       .catch(err => next(err))
   }

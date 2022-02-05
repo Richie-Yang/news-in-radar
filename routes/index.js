@@ -15,6 +15,12 @@ router.get('/admin/news/:newsId/edit', authenticatedAdmin, adminController.editN
 router.put('/admin/news/:newsId', authenticatedAdmin, adminController.putNews)
 router.delete('/admin/news/:newsId', authenticatedAdmin, adminController.deleteNews)
 
+router.get('/admin/categories/:categoryId/edit', authenticatedAdmin, adminController.getCategories)
+router.put('/admin/categories/:categoryId', authenticatedAdmin, adminController.putCategory)
+router.delete('/admin/categories/:categoryId', authenticatedAdmin, adminController.deleteCategory)
+router.post('/admin/categories', authenticatedAdmin, adminController.postCategory)
+router.get('/admin/categories', authenticatedAdmin, adminController.getCategories)
+
 router.get('/admin/users', authenticatedAdmin, adminController.getUsers)
 router.patch('/admin/users/:userId', authenticatedAdmin, adminController.patchUser)
 router.delete('/admin/users/:userId', authenticatedAdmin, adminController.deleteUser)

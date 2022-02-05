@@ -1,0 +1,59 @@
+<div class="d-md-flex justify-content-between">
+  <h3>類別清單</h3>
+
+  <ul class="nav nav-tabs align-self-end">
+    <li class="nav-item">
+      <a class="nav-link bg-secondary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">新增項目</a>
+    </li>
+    {{> admin-tabs route="類別清單"}}
+  </ul>
+</div>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">中文名稱</th>
+      <th scope="col">英文縮寫</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="collapse" id="collapseExample">
+      <form action="/admin/categories" method="POST" class="card card-body">
+        <th scope="row">#</th>
+        <td><input type="text" class="form-control" name="displayName" placeholder="輸入中文名稱。 ex: 台灣"></td>
+        <td><input type="text" class="form-control" name="name" placeholder="輸入英文縮寫。 ex: tw"></td>
+        <td class="d-flex">
+          <button type="submit" class="btn btn-primary">新增類別</button>
+        </td>
+      </form>
+    </tr>
+    {{#each categories}}
+      {{#if isEditable}}
+        <tr>
+          <form action="/admin/categories/{{this.id}}?_method=PUT" method="POST">
+            <th scope="row">{{this.id}}</th>
+            <td><input type="text" class="form-control" value="{{this.displayName}}" name="displayName"></td>
+            <td><input type="text" class="form-control" value="{{this.name}}" name="name"></td>
+            <td class="d-flex">
+              <button type="submit" class="btn btn-primary">儲存修改</button>
+            </td>
+          </form>
+        </tr>
+      {{else}}
+        <tr>
+          <th scope="row">{{this.id}}</th>
+          <td>{{this.displayName}}</td>
+          <td>{{this.name}}</td>
+          <td class="d-flex">
+            <a href="/admin/categories/{{this.id}}/edit" class="btn btn-primary me-2">編輯</a>
+            <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-danger">刪除</button>
+            </form>
+          </td>
+        </tr>
+      {{/if}}
+    {{/each}}
+  </tbody>
+</table>

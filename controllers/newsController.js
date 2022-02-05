@@ -22,7 +22,7 @@ module.exports = {
       )
       if (diff < 60) return next()
 
-      const requestUrl = `${process.env.NEWS_API_URI_1}?country=${process.env.NEWS_API_QUERY_COUNTRY}&apiKey=${process.env.NEWS_API_KEY}&pageSize=${PAGE_SIZE}`
+      const requestUrl = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY}&apiKey=${process.env.NEWS_API_KEY_1}&pageSize=${PAGE_SIZE}`
 
       const { data } = await axios.get(requestUrl)
       if (data.status !== 'ok') throw new Error('新聞自動化擷取程序出錯')
