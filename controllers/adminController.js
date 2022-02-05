@@ -1,16 +1,24 @@
 const moment = require('moment')
 const { News, User, Category } = require('../models')
+const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
   getNewsList: (req, res, next) => {
-    return News.findAll({ raw: true })
-      .then(news => {
-        news = news.map(item => ({
-          ...item,
-          publishedAt: moment(item.publishedAt).format("YYYY/MM/DD")
-        }))
+    const page = Number(req.query.page) || 1
+    const limit = 10
+    const offset = getOffset(page, limit)
 
-        return res.render('admin/news', { news })
+    return News.findAndCountAll({
+      order: [['createdAt', 'DESC']],
+      limit,
+      offset,
+      raw: true
+    })
+      .then(({ count, rows }) => {
+        return res.render('admin/news-list', {
+          news: rows,
+          pagination: getPagination(page, limit, count)
+        })
       })
       .catch(err => next(err))
   },
@@ -83,13 +91,25 @@ module.exports = {
   },
 
   getUsers: (req, res, next) => {
-    return User.findAll({ raw: true })
-      .then(users => {
-        users = users.map(user => ({
-          ...user,
-          isRoot: user.name === 'root' && user.email === 'root@example.com'
+    const page = Number(req.query.page) || 1
+    const limit = 10
+    const offset = getOffset(page, limit)
+
+    return User.findAndCountAll({
+      limit,
+      offset,
+      raw: true
+    })
+      .then(({ count, rows }) => {
+        rows = rows.map(row => ({
+          ...row,
+          isRoot: row.name === 'root' && row.email === 'root@example.com'
         }))
-        res.render('admin/users', { users })
+
+        return res.render('admin/users', {
+          users: rows,
+          pagination: getPagination(page, limit, count)
+        })
       })
       .catch(err => next(err))
   },
@@ -140,17 +160,27 @@ module.exports = {
 
   getCategories: (req, res, next) => {
     const { categoryId } = req.params
+    const page = Number(req.query.page) || 1
+    const limit = 10
+    const offset = getOffset(page, limit)
 
-    return Category.findAll({ raw: true })
-      .then(categories => {
+    return Category.findAndCountAll({
+      limit,
+      offset,
+      raw: true
+    })
+      .then(({ count, rows }) => {
         if (categoryId) {
-          categories = categories.map(category => ({
-            ...category,
-            isEditable: category.id === Number(categoryId)
+          rows = rows.map(row => ({
+            ...row,
+            isEditable: row.id === Number(categoryId)
           }))
         }
 
-        return res.render('admin/categories', { categories })
+        return res.render('admin/categories', {
+          categories: rows,
+          pagination: getPagination(page, limit, count)
+        })
       })
       .catch(err => next(err))
   },

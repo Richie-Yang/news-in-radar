@@ -14,19 +14,29 @@ module.exports = {
     const prev = currentPage - 1 < 1 ? 1 : currentPage - 1
     const next = currentPage + 1 > totalPages ? totalPages : currentPage + 1
 
+    // if total display pages (exclude minPage and totalPages) are 5
+    // then both left and right displayPages are all 2
+    // ex: [3 and 4 <- leftPages, 5 <- currentPage, 6 and 7 <- rightPages]
+    const displayLeftPages = -2
+    const displayRightPages = 2
+    const displaySidePages = displayRightPages
+
     const pages = []
     
-    for (let i = -2; i <= 2; i++) {
+    // only push page numbers between minPage and totalPages
+    for (let i = displayLeftPages; i <= displayRightPages; i++) {
       if (currentPage + i > minPage && currentPage + i < totalPages) {
         pages.push(currentPage + i)
       }
     }
 
-    if (!pages.includes(minPage + 1)) pages.unshift('...')
+    // prepend '...' if following conditions are met
+    if (!pages.includes(minPage + 1) && pages.length >= displaySidePages) pages.unshift('...')
     pages.unshift(minPage)
     
-    if (!pages.includes(totalPages - 1)) pages.push('...')
-    pages.push(totalPages)
+    // append '...' if following conditions are met
+    if (!pages.includes(totalPages - 1) && pages.length >= displaySidePages) pages.push('...')
+    if (minPage !== totalPages) pages.push(totalPages)
 
     return {
       pages, totalPages, currentPage, prev, next

@@ -32,16 +32,4 @@
   {{/each}}
 </div>
 
-<nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center">
-    <li class="page-item"><a class="page-link" href="/news?page={{pagination.prev}}">上一頁</a></li>
-    {{#each pagination.pages}}
-      {{#ifCond ../pagination.currentPage this}}
-        <li class="page-item active"><a class="page-link" href="/news?page={{this}}">{{this}}</a></li>
-      {{else}}
-        <li class="page-item"><a class="page-link" href="/news?page={{this}}">{{this}}</a></li>
-      {{/ifCond}}
-    {{/each}}
-    <li class="page-item"><a class="page-link" href="/news?page={{pagination.next}}">下一頁</a></li>
-  </ul>
-</nav>
+{{> pagination pageRoute="/news"}}
