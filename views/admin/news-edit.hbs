@@ -6,6 +6,20 @@
   </div>
 
   <div class="mb-3">
+    <label for="category" class="form-label">類別</label>
+    <select class="form-select" id="category" name="categoryId">
+      <option value="0">選擇以下類別</option>
+      {{#each categories}}
+        {{#ifCond this.id ../news.categoryId}}
+          <option value="{{this.id}}" selected>{{this.displayNme}}</option>
+        {{else}}
+          <option value="{{this.id}}">{{this.displayName}}</option>
+        {{/ifCond}}
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="mb-3">
     <label for="description" class="form-label">描述</label>
     <textarea class="form-control" name="description" id="description" cols="30" rows="10">
       {{news.description}}
@@ -29,7 +43,7 @@
 
   <div class="mb-5">
     <label for="publishedAt" class="form-label">發佈時間</label>
-    <input type="datetime-local" class="form-control" id="publishedAt" name="publishedAt">
+    <input type="datetime-local" class="form-control" id="publishedAt" name="publishedAt" value="{{news.publishedAt}}">
   </div>
 
   <a href="/admin/news" class="btn btn-info">返回</a>

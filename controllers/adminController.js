@@ -18,22 +18,31 @@ module.exports = {
   editNews: (req, res, next) => {
     const { newsId } = req.params
 
-    return News.findByPk(newsId, { raw: true })
-      .then(news => {
+    return Promise.all([
+      News.findByPk(newsId, { raw: true }),
+      Category.findAll({ raw: true })
+    ])
+      .then(([news, categories]) => {
         if (!news) throw new Error('新聞並不存在')
-        return res.render('admin/news-edit', { news })
+
+        news = {
+          ...news,
+          publishedAt: moment(news.publishedAt).format("YYYY-MM-DDThh:mm")
+        }
+
+        return res.render('admin/news-edit', { news, categories })
       })
-      .catch(err => next(err))
+      .catch(err => next(err)) 
   },
 
   putNews: (req, res, next) => {
     const { newsId } = req.params
     const { 
-      title, description, author, url, urlToImage, publishedAt 
+      title, description, author, url, urlToImage, publishedAt, categoryId
     } = req.body
 
-    if (!title.trim() || !description.trim()) {
-      throw new Error('標題和描述欄位都是必填')
+    if (!title.trim() || !description.trim() || !categoryId) {
+      throw new Error('標題、描述、類別欄位都是必填')
     }
 
     return News.findByPk(newsId)
@@ -46,7 +55,8 @@ module.exports = {
           author,
           url,
           urlToImage,
-          publishedAt: moment(publishedAt).format()
+          publishedAt: moment(publishedAt).format(),
+          categoryId: Number(categoryId)
         })
       })
       .then(() => {
