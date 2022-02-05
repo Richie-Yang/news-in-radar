@@ -54,4 +54,8 @@ html, body {
     background-size: cover;
     background-position: center;
   }
+
+  #country-tabs {
+    width: 30%;
+  }
 }

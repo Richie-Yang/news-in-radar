@@ -1,3 +1,29 @@
+<form id="search-form" action="/news" method="GET" class="d-flex flex-column flex-lg-row justify-content-between mb-2">
+  <div class="d-flex mb-2 mb-md-0">
+    <input type="text" class="me-2 rounded" name="keyword" id="keyword" placeholder="請輸入關鍵字" value="{{keyword}}">
+    <select name="filter" id="filter" class="me-2 rounded">
+      <option value="ASC" {{#ifCond filter "ASC" }}selected{{/ifCond}}>最舊 -> 最新</option>
+      <option value="DESC" {{#ifCond filter "DESC" }}selected{{/ifCond}}>最新 -> 最舊</option>
+    </select>
+    <button class="btn btn-primary">搜尋</button>
+  </div>
+
+  <div id="country-tabs" class="input-group">
+    <span class="input-group-text" id="inputGroup-sizing-default">國家類別</span>
+    <select name="categoryId" id="categoryId" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      <option value="0">所有國家</option>
+      {{#each categories}}
+        {{#ifCond this.id ../categoryId}}
+          <option value="{{this.id}}" selected>{{this.displayName}}</option>
+        {{else}}
+          <option value="{{this.id}}">{{this.displayName}}</option>
+        {{/ifCond}}
+      {{/each}}
+    </select>
+  </div>
+
+</form>
+
 <div id="news-list" class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
   {{#each news}}
   <div class="col p-2">
@@ -33,3 +59,5 @@
 </div>
 
 {{> pagination pageRoute="/news"}}
+
+<script src="/javascripts/form-submit.js"></script>

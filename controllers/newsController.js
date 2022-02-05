@@ -1,7 +1,7 @@
 const moment = require('moment')
 const axios = require('axios')
 const { Op } = require("sequelize")
-const { News, Comment, User, Like } = require('../models')
+const { News, Comment, User, Like, Category } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
@@ -51,30 +51,54 @@ module.exports = {
     } catch (err) { next(err) }
   },
 
-  getNewsList: (req, res, next) => {
-    const page = Number(req.query.page) || 1
-    const limit = 9
-    const offset = getOffset(page, limit)
+  getNewsList: async (req, res, next) => {
+    try {
+      let { keyword, filter, categoryId } = req.query
+      const page = Number(req.query.page) || 1
+      const limit = 9
+      const offset = getOffset(page, limit)
 
-    return News.findAndCountAll({
-      order: [['createdAt', 'DESC']],
-      limit,
-      offset,
-      raw: true
-    })
-      .then(({ count, rows }) => {
-        const likedNewsIdArray = req.user?.LikedNewsForUsers.map(likedNews => likedNews.id) || []
-        rows = rows.map(item => ({
-          ...item,
-          isLiked: likedNewsIdArray.some(likedNewsId => likedNewsId === item.id)
-        }))
+      keyword = keyword ? keyword.trim() : ''
+      filter = filter && filter !== 'none'
+        ? filter : "DESC"
+      
+      categoryId = Number(categoryId) || 0
 
-        res.render('news-list', {
-          news: rows,
-          pagination: getPagination(page, limit, count)
-        })
+      const [news, categories] = await Promise.all([
+        News.findAndCountAll({
+          where: {
+            [Op.or]: {
+              title: { [Op.like]: `%${keyword}%` },
+              author: { [Op.like]: `%${keyword}%` }
+            },
+            categoryId
+          },
+          order: [['publishedAt', filter]],
+          limit,
+          offset,
+          raw: true
+        }),
+
+        Category.findAll({ raw: true })
+      ])
+
+      let { count, rows } = news
+
+      const likedNewsIdArray = req.user?.LikedNewsForUsers.map(likedNews => likedNews.id) || []
+      rows = rows.map(item => ({
+        ...item,
+        isLiked: likedNewsIdArray.some(likedNewsId => likedNewsId === item.id)
+      }))
+
+      return res.render('news-list', {
+        news: rows,
+        pagination: getPagination(page, limit, count),
+        keyword,
+        filter,
+        categories,
+        categoryId
       })
-      .catch(err => next(err))
+    } catch (err) { next(err) }
   },
 
   getNews: async (req, res, next) => {
