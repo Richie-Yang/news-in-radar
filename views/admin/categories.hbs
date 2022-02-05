@@ -1,5 +1,15 @@
 <div class="d-md-flex justify-content-between">
-  <h3>類別清單</h3>
+  <div>
+    <h3>類別清單</h3>
+    <form action="/admin/categories" method="GET" class="d-flex mb-2">
+      <input type="text" class="me-2 rounded" name="keyword" id="keyword" placeholder="請輸入關鍵字" value="{{keyword}}">
+      <select name="filter" id="filter" class="me-2 rounded">
+        <option value="ASC" {{#ifCond filter "ASC" }}selected{{/ifCond}}>最舊 -> 最新</option>
+        <option value="DESC" {{#ifCond filter "DESC" }}selected{{/ifCond}}>最新 -> 最舊</option>
+      </select>
+      <button class="btn btn-primary">搜尋</button>
+    </form>
+  </div>
 
   <ul class="nav nav-tabs align-self-end">
     <li class="nav-item">

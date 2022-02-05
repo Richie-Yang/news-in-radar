@@ -8,7 +8,9 @@ module.exports = {
   getPagination: (
       currentPageNum = 1, numbersPerPage = 9, totalNumbers
     ) => {
-    const totalPages = Math.ceil(Number(totalNumbers) / numbersPerPage)
+    let totalPages = Math.ceil(Number(totalNumbers) / numbersPerPage)
+    totalPages = totalPages ? totalPages : 1
+
     const minPage = 1
     const currentPage = currentPageNum < 1 ? 1 : currentPageNum > totalPages ? totalPages : currentPageNum
     const prev = currentPage - 1 < 1 ? 1 : currentPage - 1

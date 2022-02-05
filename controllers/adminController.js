@@ -1,15 +1,27 @@
 const moment = require('moment')
+const { Op } = require("sequelize")
 const { News, User, Category } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
   getNewsList: (req, res, next) => {
+    let { keyword, filter } = req.query
     const page = Number(req.query.page) || 1
     const limit = 10
     const offset = getOffset(page, limit)
 
+    keyword = keyword ? keyword.trim() : ''
+    filter = filter && filter !== 'none'
+      ? filter : "DESC"
+
     return News.findAndCountAll({
-      order: [['createdAt', 'DESC']],
+      where: {
+        [Op.or]: {
+          title: { [Op.like]: `%${keyword}%` },
+          author: { [Op.like]: `%${keyword}%` }
+        }
+      },
+      order: [['publishedAt', filter]],
       limit,
       offset,
       raw: true
@@ -17,7 +29,9 @@ module.exports = {
       .then(({ count, rows }) => {
         return res.render('admin/news-list', {
           news: rows,
-          pagination: getPagination(page, limit, count)
+          pagination: getPagination(page, limit, count),
+          keyword,
+          filter  
         })
       })
       .catch(err => next(err))
@@ -91,11 +105,23 @@ module.exports = {
   },
 
   getUsers: (req, res, next) => {
+    let { keyword, filter } = req.query
     const page = Number(req.query.page) || 1
     const limit = 10
     const offset = getOffset(page, limit)
 
+    keyword = keyword ? keyword.trim() : ''
+    filter = filter && filter !== 'none'
+      ? filter : "DESC"
+
     return User.findAndCountAll({
+      where: {
+        [Op.or]: {
+          name: { [Op.like]: `%${keyword}%` },
+          email: { [Op.like]: `%${keyword}%` }
+        }
+      },
+      order: [['createdAt', filter]],
       limit,
       offset,
       raw: true
@@ -108,7 +134,9 @@ module.exports = {
 
         return res.render('admin/users', {
           users: rows,
-          pagination: getPagination(page, limit, count)
+          pagination: getPagination(page, limit, count),
+          keyword,
+          filter
         })
       })
       .catch(err => next(err))
@@ -159,12 +187,24 @@ module.exports = {
   },
 
   getCategories: (req, res, next) => {
+    let { keyword, filter } = req.query
     const { categoryId } = req.params
     const page = Number(req.query.page) || 1
     const limit = 10
     const offset = getOffset(page, limit)
 
+    keyword = keyword ? keyword.trim() : ''
+    filter = filter && filter !== 'none'
+      ? filter : "DESC"
+
     return Category.findAndCountAll({
+      where: {
+        [Op.or]: {
+          name: { [Op.like]: `%${keyword}%` },
+          displayName: { [Op.like]: `%${keyword}%` }
+        }
+      },
+      order: [['createdAt', filter]],
       limit,
       offset,
       raw: true
@@ -179,7 +219,9 @@ module.exports = {
 
         return res.render('admin/categories', {
           categories: rows,
-          pagination: getPagination(page, limit, count)
+          pagination: getPagination(page, limit, count),
+          keyword,
+          filter
         })
       })
       .catch(err => next(err))
