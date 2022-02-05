@@ -22,31 +22,80 @@ module.exports = {
       )
       if (diff < 60) return next()
 
-      const requestUrl = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY}&apiKey=${process.env.NEWS_API_KEY_1}&pageSize=${PAGE_SIZE}`
+      const requestUrlForTw = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY_1}&apiKey=${process.env.NEWS_API_KEY_1}&pageSize=${PAGE_SIZE}`
 
-      const { data } = await axios.get(requestUrl)
-      if (data.status !== 'ok') throw new Error('新聞自動化擷取程序出錯')
+      const requestUrlForUs = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY_2}&apiKey=${process.env.NEWS_API_KEY_2}&pageSize=${PAGE_SIZE}`
 
-      await Promise.allSettled(
-        Array.from({ length: data.articles.length }, (_, index) => {
+      const [TwData, UsData, categories] = await Promise.all([
+        axios.get(requestUrlForTw),
+        axios.get(requestUrlForUs),
+        Category.findAll({ raw: true })
+      ])
+
+      if (TwData.data.status !== 'ok' || UsData.data.status !== 'ok') {
+        throw new Error('新聞自動化擷取程序出錯')
+      }
+
+      const TwCategoryId = categories[categories.findIndex(
+        category => category.name === process.env.NEWS_API_QUERY_COUNTRY_1
+      )].id
+
+      const UsCategoryId = categories[categories.findIndex(
+        category => category.name === process.env.NEWS_API_QUERY_COUNTRY_2
+      )].id
+
+      await Promise.allSettled([
+        ...Array.from({ length: TwData.data.articles.length }, (_, index) => {
           const {
             title, description, url, urlToImage, publishedAt
-          } = data.articles[index]
+          } = TwData.data.articles[index]
 
-          const author = data.articles[index].author
-            ? data.articles[index].author
+          const author = TwData.data.articles[index].author
+            ? TwData.data.articles[index].author
             : '尚無出處'
 
           return News.findOne({ where: { title } })
             .then(news => {
               if (!news) {
                 return News.create({
-                  author, title, description, url, urlToImage, publishedAt
+                  author,
+                  title,
+                  description,
+                  url,
+                  urlToImage,
+                  publishedAt,
+                  categoryId: TwCategoryId
+                })
+              }
+            })
+        }),
+
+        ...Array.from({ length: UsData.data.articles.length }, (_, index) => {
+          const {
+            title, description, url, urlToImage, publishedAt
+          } = UsData.data.articles[index]
+
+          const author = UsData.data.articles[index].author
+            ? UsData.data.articles[index].author
+            : '尚無出處'
+
+          return News.findOne({ where: { title } })
+            .then(news => {
+              if (!news) {
+                return News.create({
+                  author,
+                  title,
+                  description,
+                  url,
+                  urlToImage,
+                  publishedAt,
+                  categoryId: UsCategoryId
                 })
               }
             })
         })
-      )
+      ])
+
       next()
     } catch (err) { next(err) }
   },

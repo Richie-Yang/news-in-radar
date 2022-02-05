@@ -11,7 +11,7 @@
       <option value="0">選擇以下類別</option>
       {{#each categories}}
         {{#ifCond this.id ../news.categoryId}}
-          <option value="{{this.id}}" selected>{{this.displayNme}}</option>
+          <option value="{{this.id}}" selected>{{this.displayName}}</option>
         {{else}}
           <option value="{{this.id}}">{{this.displayName}}</option>
         {{/ifCond}}
