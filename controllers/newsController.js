@@ -26,13 +26,20 @@ module.exports = {
 
       const requestUrlForUs = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY_2}&apiKey=${process.env.NEWS_API_KEY_2}&pageSize=${PAGE_SIZE}`
 
-      const [TwData, UsData, categories] = await Promise.all([
+      const requestUrlForGb = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY_3}&apiKey=${process.env.NEWS_API_KEY_2}&pageSize=${PAGE_SIZE}`
+
+      const [TwData, UsData, GbData, categories] = await Promise.all([
         axios.get(requestUrlForTw),
         axios.get(requestUrlForUs),
+        axios.get(requestUrlForGb),
         Category.findAll({ raw: true })
       ])
 
-      if (TwData.data.status !== 'ok' || UsData.data.status !== 'ok') {
+      if (
+        TwData.data.status !== 'ok' || 
+        UsData.data.status !== 'ok' ||
+        GbData.data.status !== 'ok'
+      ) {
         throw new Error('新聞自動化擷取程序出錯')
       }
 
@@ -42,6 +49,10 @@ module.exports = {
 
       const UsCategoryId = categories[categories.findIndex(
         category => category.name === process.env.NEWS_API_QUERY_COUNTRY_2
+      )].id
+
+      const GbCategoryId = categories[categories.findIndex(
+        category => category.name === process.env.NEWS_API_QUERY_COUNTRY_3
       )].id
 
       await Promise.allSettled([
@@ -93,7 +104,32 @@ module.exports = {
                 })
               }
             })
-        })
+        }),
+
+        ...Array.from({ length: GbData.data.articles.length }, (_, index) => {
+          const {
+            title, description, url, urlToImage, publishedAt
+          } = GbData.data.articles[index]
+
+          const author = GbData.data.articles[index].author
+            ? GbData.data.articles[index].author
+            : '尚無出處'
+
+          return News.findOne({ where: { title } })
+            .then(news => {
+              if (!news) {
+                return News.create({
+                  author,
+                  title,
+                  description,
+                  url,
+                  urlToImage,
+                  publishedAt,
+                  categoryId: GbCategoryId
+                })
+              }
+            })
+        }),
       ])
 
       next()
@@ -110,18 +146,31 @@ module.exports = {
       keyword = keyword ? keyword.trim() : ''
       filter = filter && filter !== 'none'
         ? filter : "DESC"
-      
-      categoryId = Number(categoryId) || 0
+
+      const where = {
+        [Op.or]: {
+          title: { [Op.like]: `%${keyword}%` },
+          author: { [Op.like]: `%${keyword}%` }
+        }
+      }
+
+      switch (true) {
+        case (Number(categoryId) === 0):
+          categoryId = Number(categoryId)
+          where.categoryId = categoryId
+          break
+        case (Number(categoryId) > 0):
+          categoryId = Number(categoryId)
+          where.categoryId = categoryId
+          break
+        default:
+          categoryId = 'all'
+          where.categoryId = { [Op.like]: '%' }
+      }
 
       const [news, categories] = await Promise.all([
         News.findAndCountAll({
-          where: {
-            [Op.or]: {
-              title: { [Op.like]: `%${keyword}%` },
-              author: { [Op.like]: `%${keyword}%` }
-            },
-            categoryId
-          },
+          where,
           order: [['publishedAt', filter]],
           limit,
           offset,
