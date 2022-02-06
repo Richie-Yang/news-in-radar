@@ -6,6 +6,13 @@ News-in-radar, the web service which provides latest news for visitors.
 I did spend from several months to almost years seting up IT environment at my home, and one thing which always was bugging my mind is the lack of customimzed portal for WiFi entry point. However, if I just simply built plain HTML page, it's going to be boring. So after I got the web-dev skill, the first priority thing for me is to build a WiFi portal which is more than just that. The whole project is to display news contents, and all of them are done automatically. 
 
 
+## Screenshots
+### news view
+![News Page](https://github.com/Richie-Yang/news-in-radar/blob/main/public/images/news_view.jpg)
+### admin news view
+![Admin News Page](https://github.com/Richie-Yang/news-in-radar/blob/main/public/images/admin_news_view.jpg)
+
+
 ## Features
 1. Web server automatically retrieve news data from the Internet.
 2. All news data are classified into individual category.
