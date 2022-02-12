@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Comment.belongsTo(models.News, { foreignKey: 'newsId' })
       Comment.belongsTo(models.User, { foreignKey: 'userId' })
+      Comment.belongsTo(Comment, { foreignKey: 'commentId' })
       Comment.belongsToMany(models.User, {
         through: models.Like,
         foreignKey: 'commentId',
@@ -26,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     totalLikes: DataTypes.INTEGER,
     newsId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
+    commentId: DataTypes.INTEGER,
     isSeed: DataTypes.BOOLEAN
   }, {
     sequelize,
