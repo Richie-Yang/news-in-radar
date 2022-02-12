@@ -205,28 +205,40 @@ module.exports = {
       const userId = req.user?.id || null
 
       let news = await News.findByPk(newsId, {
-        include: { model: Comment, include: User },
+        include: { 
+          model: Comment, include: [
+            { model: User },
+            { model: Comment, as: 'ReplyComments', include: User }
+          ] 
+        },
         nest: true
       })
 
       if (!news) throw new Error('這個新聞並不存在')
       const likedCommentsIdArray = req.user?.LikedCommentForUsers.map(likedComment => likedComment.id) || []
 
-      news = {
-        ...news.toJSON(),
-        isEditable: news.Comments.some(c => c.userId === userId),
+      news = news.toJSON()
+      for (let i = news.Comments.length - 1; i >= 0; i--) {
+        if (news.Comments[i].commentId) news.Comments.splice(i, 1)
       }
 
-      news.Comments.forEach((comment, index, array) => {
-        array[index].isLiked = likedCommentsIdArray.some(
-          likedCommentId => likedCommentId === comment.id
+      const newsComments = news.Comments
+      for (let x = 0; x < newsComments.length; x++) {
+        newsComments[x].isLiked = likedCommentsIdArray.some(
+          likedCommentId => likedCommentId === newsComments[x].id
         )
-      })
+        newsComments[x].isEditable = newsComments[x].userId === userId
 
-      // const relatedNews = await News.findAll({
-      //   where: { title: { [Op.like]: `%${news.title.substring(0, 5)}%` } },
-      //   raw: true
-      // })
+        const replyComments = news.Comments[x].ReplyComments
+        if (replyComments.length) {
+          for (let y = 0; y < replyComments.length; y++) {
+            replyComments[y].isLiked = likedCommentsIdArray.some(
+              likedCommentId => likedCommentId === replyComments[y].id
+            )
+            replyComments[y].isEditable = replyComments[y].userId === userId
+          }
+        }
+      }
 
       let relatedNews = await News.findAll({
         where: { author: news.author, id: { [Op.ne]: news.id } },

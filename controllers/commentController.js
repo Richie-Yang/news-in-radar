@@ -4,7 +4,7 @@ const { Comment, News, User, Like } = require('../models')
 module.exports = {
   postComment: async (req, res, next) => {
     try {
-      const { newsId } = req.params
+      const { newsId, commentId } = req.params
       const content = req.body.comment
       const userId = req.user.id
 
@@ -12,7 +12,7 @@ module.exports = {
 
       const [_, news] = await Promise.all([
         Comment.create({
-          content, newsId, userId
+          content, newsId, userId, commentId
         }),
         News.findByPk(newsId)
       ])

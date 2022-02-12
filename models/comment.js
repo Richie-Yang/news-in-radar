@@ -13,7 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Comment.belongsTo(models.News, { foreignKey: 'newsId' })
       Comment.belongsTo(models.User, { foreignKey: 'userId' })
-      Comment.belongsTo(Comment, { foreignKey: 'commentId' })
+      Comment.hasMany(Comment, {
+        foreignKey: 'commentId',
+        as: 'ReplyComments'
+      })
+      Comment.belongsTo(Comment, {
+        foreignKey: 'commentId',
+        as: 'RepliedComment'
+      })
       Comment.belongsToMany(models.User, {
         through: models.Like,
         foreignKey: 'commentId',

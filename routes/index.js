@@ -35,6 +35,7 @@ router.post('/register', userController.register)
 router.get('/news/:newsId/comments/:commentId/edit', authenticated, commentController.editComment)
 router.put('/news/:newsId/comments/:commentId', authenticated, commentController.putComment)
 router.delete('/news/:newsId/comments/:commentId', authenticated, commentController.deleteComment)
+router.post('/news/:newsId/comments/:commentId', authenticated, commentController.postComment)
 router.post('/news/:newsId/comments', authenticated, commentController.postComment)
 
 router.post('/comments/:commentId/likes', authenticated, commentController.postLike)
