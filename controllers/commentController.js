@@ -84,9 +84,12 @@ module.exports = {
       const { newsId, commentId } = req.params
       const userId = req.user.id
 
-      const [comment, news] = await Promise.all([
+      const [comment, replies, news] = await Promise.all([
         Comment.findOne({
           where: { id: commentId, newsId, userId }
+        }),
+        Comment.findAndCountAll({
+          where: { commentId }
         }),
         News.findByPk(newsId)
       ])
@@ -96,7 +99,8 @@ module.exports = {
 
       await Promise.all([
         comment.destroy(),
-        news.decrement('totalComments', { by: 1 })
+        ...replies.rows.map(reply => reply.destroy()),
+        news.decrement('totalComments', { by: replies.count + 1 })
       ])
       
       req.flash('success_messages', '評論已經成功刪除')
