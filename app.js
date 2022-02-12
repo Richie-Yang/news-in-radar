@@ -42,3 +42,5 @@ app.use((req, res, next) => {
 app.use(routes)
 
 app.listen(PORT, () => console.info(`Express server is listening at 127.0.0.1:${3000}`))
+
+module.exports = app

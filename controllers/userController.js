@@ -7,10 +7,11 @@ module.exports = {
   },
 
   login: (req, res) => {
-    const { name } = req.user
+    const { name, isAdmin } = req.user
+    const redirectPath = isAdmin ? '/admin/news' : '/news'
 
     req.flash('success_messages', `歡迎回來 ${name}`)
-    return res.redirect('/admin/news')
+    return res.redirect(redirectPath)
   },
 
   registerPage: (req, res) => {
