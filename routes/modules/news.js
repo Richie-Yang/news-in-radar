@@ -9,9 +9,6 @@ router.delete('/:newsId/comments/:commentId', authenticated, commentController.d
 router.post('/:newsId/comments/:commentId', authenticated, commentController.postComment)
 router.post('/:newsId/comments', authenticated, commentController.postComment)
 
-router.post('/comments/:commentId/likes', authenticated, commentController.postLike)
-router.delete('/comments/:commentId/likes', authenticated, commentController.deleteLike)
-
 router.post('/:newsId/likes', authenticated, newsController.postLike)
 router.delete('/:newsId/likes', authenticated, newsController.deleteLike)
 

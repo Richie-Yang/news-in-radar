@@ -1,0 +1,51 @@
+<div id="profile" class="d-flex flex-column flex-md-row justify-content-center">
+  <div class="p-2 rounded">
+    <div id="profile-image" class="mx-auto">
+      <img src="https://www.venmond.com/demo/vendroid/img/avatar/big.jpg" alt="profile-image" class="w-100">
+    </div>
+
+    <br>
+
+    <div class="text-center">
+      <h4>{{user.name}}</h4>
+      <h6><a href="mailto://{{user.email}}">{{user.email}}</a></h6>
+      <h6><a href="/users/{{user.id}}/edit">編輯</a></h6>
+    </div>
+
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">總評論數量: 0</li>
+      <li class="list-group-item">被點讚數量: 0</li>
+      <li class="list-group-item">追隨者數量: 0</li>
+      <li class="list-group-item">被追隨數量: 0</li>
+    </ul>
+  </div>
+
+  <br>
+
+  <div class="d-flex flex-column p-2">
+    <div class="card h-50">
+      <div class="card-header">
+        喜愛過的新聞
+      </div>
+      <div class="d-flex flex-wrap p-2">
+        {{#each user.LikedNewsForUsers}}
+        <a href="/news/{{this.id}}"><img class="liked-news" src="{{this.urlToImage}}" alt=""></a>
+        {{/each}}
+      </div>
+    </div>
+    
+    <br>
+
+    <div class="card h-50">
+      <div class="card-header">
+        評論過的新聞
+      </div>
+      <div class="d-flex flex-wrap p-2">
+        {{#each user.Comments}}
+        <a href="/news/{{this.newsId}}"><img class="liked-news" src="{{this.News.urlToImage}}" alt=""></a>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>
+

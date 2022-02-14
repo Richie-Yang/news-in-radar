@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { User } = require('../models')
+const { User, Comment, News } = require('../models')
 
 module.exports = {
   loginPage: (req, res) => {
@@ -55,5 +55,36 @@ module.exports = {
     req.flash('success_messages', '你已經成功登出了')
     req.logout()
     return res.redirect('/login')
+  },
+
+  getUser: (req, res, next) => {
+    const sessionUserId = req.user.id
+    const requestUserId = Number(req.params.userId)
+
+    return User.findByPk(requestUserId, {
+      include: [
+        { model: News, as: 'LikedNewsForUsers' },
+        {  model: Comment, include: News }
+      ],
+      nest: true
+    })
+      .then(user => {
+        if (!user) throw new Error('這位使用者已經不存在了')
+
+        user = {
+          ...user.toJSON(),
+          isEditable: sessionUserId === requestUserId
+        }
+        
+        const commentSet = new Set()
+        user.Comments = user.Comments.filter(c => {
+          return !commentSet.has(c.newsId) 
+            ? commentSet.add(c.newsId)
+            : false
+        })
+
+        return res.render('users/profile', { user })
+      })
+      .catch(err => next(err))
   }
 }

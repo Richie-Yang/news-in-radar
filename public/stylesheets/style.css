@@ -36,6 +36,19 @@ html, body {
   background-position: center;
 }
 
+#profile #profile-image {
+  /* outline: 3px solid tomato; */
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+#profile .liked-news {
+  width: 125px;
+  height: 85px;
+}
+
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) { 
   #news #news-image {
