@@ -1,8 +1,8 @@
 const moment = require('moment')
-const axios = require('axios')
 const { Op } = require("sequelize")
 const { News, Comment, User, Like, Category } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const newsServices = require('../services/news-services')
 
 module.exports = {
   genNewsList: async (req, res, next) => {
@@ -22,129 +22,26 @@ module.exports = {
       )
       if (diff < 60) return next()
 
-      const requestUrlForTw = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY_1}&apiKey=${process.env.NEWS_API_KEY_1}&pageSize=${PAGE_SIZE}`
-
-      const requestUrlForUs = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY_2}&apiKey=${process.env.NEWS_API_KEY_2}&pageSize=${PAGE_SIZE}`
-
-      const requestUrlForGb = `${process.env.NEWS_API_URI}?country=${process.env.NEWS_API_QUERY_COUNTRY_3}&apiKey=${process.env.NEWS_API_KEY_2}&pageSize=${PAGE_SIZE}`
-
-      const [TwData, UsData, GbData, categories] = await Promise.all([
-        axios.get(requestUrlForTw),
-        axios.get(requestUrlForUs),
-        axios.get(requestUrlForGb),
-        Category.findAll({ raw: true })
-      ])
-
-      if (
-        TwData.data.status !== 'ok' || 
-        UsData.data.status !== 'ok' ||
-        GbData.data.status !== 'ok'
-      ) {
-        throw new Error('新聞自動化擷取程序出錯')
+      // this is fixed data object format which...
+      // will be sent to newsServices.genNewsList
+      const data = {
+        NEWS_API_URI: process.env.NEWS_API_URI,
+        NEWS_API_QUERY_COUNTRY: [
+          process.env.NEWS_API_QUERY_COUNTRY_1,
+          process.env.NEWS_API_QUERY_COUNTRY_2,
+          process.env.NEWS_API_QUERY_COUNTRY_3
+        ],
+        NEWS_API_KEY: [
+          process.env.NEWS_API_KEY_1,
+          process.env.NEWS_API_KEY_2,
+        ],
+        PAGE_SIZE
       }
 
-      const TwCategoryId = categories[categories.findIndex(
-        category => category.name === process.env.NEWS_API_QUERY_COUNTRY_1
-      )].id
+      await newsServices.genNewsList(data, (err) => {
+        err ? next(err) : next()
+      })
 
-      const UsCategoryId = categories[categories.findIndex(
-        category => category.name === process.env.NEWS_API_QUERY_COUNTRY_2
-      )].id
-
-      const GbCategoryId = categories[categories.findIndex(
-        category => category.name === process.env.NEWS_API_QUERY_COUNTRY_3
-      )].id
-
-      await Promise.allSettled([
-        ...Array.from({ length: TwData.data.articles.length }, (_, index) => {
-          const {
-            title, description, url, publishedAt
-          } = TwData.data.articles[index]
-
-          const author = TwData.data.articles[index].author
-            ? TwData.data.articles[index].author
-            : '尚無出處'
-          
-          const urlToImage = TwData.data.articles[index].urlToImage
-            ? TwData.data.articles[index].urlToImage
-            : 'https://via.placeholder.com/642x500?text=No+Image+Available'
-
-          return News.findOne({ where: { title } })
-            .then(news => {
-              if (!news) {
-                return News.create({
-                  author,
-                  title,
-                  description,
-                  url,
-                  urlToImage,
-                  publishedAt,
-                  categoryId: TwCategoryId
-                })
-              }
-            })
-        }),
-
-        ...Array.from({ length: UsData.data.articles.length }, (_, index) => {
-          const {
-            title, description, url, publishedAt
-          } = UsData.data.articles[index]
-
-          const author = UsData.data.articles[index].author
-            ? UsData.data.articles[index].author
-            : '尚無出處'
-          
-          const urlToImage = UsData.data.articles[index].urlToImage
-            ? UsData.data.articles[index].urlToImage
-            : 'https://via.placeholder.com/642x500?text=No+Image+Available'
-
-          return News.findOne({ where: { title } })
-            .then(news => {
-              if (!news) {
-                return News.create({
-                  author,
-                  title,
-                  description,
-                  url,
-                  urlToImage,
-                  publishedAt,
-                  categoryId: UsCategoryId
-                })
-              }
-            })
-        }),
-
-        ...Array.from({ length: GbData.data.articles.length }, (_, index) => {
-          const {
-            title, description, url, publishedAt
-          } = GbData.data.articles[index]
-
-          const author = GbData.data.articles[index].author
-            ? GbData.data.articles[index].author
-            : '尚無出處'
-
-          const urlToImage = GbData.data.articles[index].urlToImage
-            ? GbData.data.articles[index].urlToImage
-            : 'https://via.placeholder.com/642x500?text=No+Image+Available'
-
-          return News.findOne({ where: { title } })
-            .then(news => {
-              if (!news) {
-                return News.create({
-                  author,
-                  title,
-                  description,
-                  url,
-                  urlToImage,
-                  publishedAt,
-                  categoryId: GbCategoryId
-                })
-              }
-            })
-        }),
-      ])
-
-      next()
     } catch (err) { next(err) }
   },
 
