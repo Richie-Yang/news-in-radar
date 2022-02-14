@@ -58,12 +58,16 @@ module.exports = {
       await Promise.allSettled([
         ...Array.from({ length: TwData.data.articles.length }, (_, index) => {
           const {
-            title, description, url, urlToImage, publishedAt
+            title, description, url, publishedAt
           } = TwData.data.articles[index]
 
           const author = TwData.data.articles[index].author
             ? TwData.data.articles[index].author
             : '尚無出處'
+          
+          const urlToImage = TwData.data.articles[index].urlToImage
+            ? TwData.data.articles[index].urlToImage
+            : 'https://via.placeholder.com/642x500?text=No+Image+Available'
 
           return News.findOne({ where: { title } })
             .then(news => {
@@ -83,12 +87,16 @@ module.exports = {
 
         ...Array.from({ length: UsData.data.articles.length }, (_, index) => {
           const {
-            title, description, url, urlToImage, publishedAt
+            title, description, url, publishedAt
           } = UsData.data.articles[index]
 
           const author = UsData.data.articles[index].author
             ? UsData.data.articles[index].author
             : '尚無出處'
+          
+          const urlToImage = UsData.data.articles[index].urlToImage
+            ? UsData.data.articles[index].urlToImage
+            : 'https://via.placeholder.com/642x500?text=No+Image+Available'
 
           return News.findOne({ where: { title } })
             .then(news => {
@@ -108,12 +116,16 @@ module.exports = {
 
         ...Array.from({ length: GbData.data.articles.length }, (_, index) => {
           const {
-            title, description, url, urlToImage, publishedAt
+            title, description, url, publishedAt
           } = GbData.data.articles[index]
 
           const author = GbData.data.articles[index].author
             ? GbData.data.articles[index].author
             : '尚無出處'
+
+          const urlToImage = GbData.data.articles[index].urlToImage
+            ? GbData.data.articles[index].urlToImage
+            : 'https://via.placeholder.com/642x500?text=No+Image+Available'
 
           return News.findOne({ where: { title } })
             .then(news => {
@@ -204,6 +216,7 @@ module.exports = {
       const { newsId } = req.params
       const userId = req.user?.id || null
 
+      // using eager loading to get two rows comment data
       let news = await News.findByPk(newsId, {
         include: { 
           model: Comment, include: [
@@ -215,22 +228,30 @@ module.exports = {
       })
 
       if (!news) throw new Error('這個新聞並不存在')
+      // retrieve user's likes for comments first
       const likedCommentsIdArray = req.user?.LikedCommentForUsers.map(likedComment => likedComment.id) || []
 
       news = news.toJSON()
+      // remove non root comment from first row
       for (let i = news.Comments.length - 1; i >= 0; i--) {
         if (news.Comments[i].commentId) news.Comments.splice(i, 1)
       }
 
+      // assign to one variable for later simplicity
       const newsComments = news.Comments
+
+      // loop root comments (first row) to insert 'isLiked' and 'isEditable'
       for (let x = 0; x < newsComments.length; x++) {
         newsComments[x].isLiked = likedCommentsIdArray.some(
           likedCommentId => likedCommentId === newsComments[x].id
         )
         newsComments[x].isEditable = newsComments[x].userId === userId
 
+        // assign to one variable for later simplicity
         const replyComments = news.Comments[x].ReplyComments
+        
         if (replyComments.length) {
+          // loop child comments (second row) to insert 'isLiked' and 'isEditable'
           for (let y = 0; y < replyComments.length; y++) {
             replyComments[y].isLiked = likedCommentsIdArray.some(
               likedCommentId => likedCommentId === replyComments[y].id

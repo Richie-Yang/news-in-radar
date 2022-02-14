@@ -1,6 +1,7 @@
 <div id="comment-section">
   <h5>評論</h5>
 
+  {{!-- root comments section --}}
   {{#each news.Comments}}
     <div class="d-flex justify-content-between">
       <div class="d-flex">
@@ -12,7 +13,7 @@
     </div>
 
     <div id="comment-{{this.id}}">
-      <pre class="lead" id="comment-content-{{this.id}}">{{this.content}}</pre>
+      <p id="comment-content-{{this.id}}">{{this.content}}</p>
       <br>
 
       <div class="d-flex justify-content-between">
@@ -43,6 +44,8 @@
     </div>
 
     <div class="mt-3 ms-5">
+
+      {{!-- child comments section --}}
       {{#each this.ReplyComments}}
       <div class="d-flex justify-content-between">
         <div class="d-flex">
@@ -54,7 +57,7 @@
       </div>
 
       <div id="comment-{{this.id}}">
-        <pre class="lead" id="comment-content-{{this.id}}">{{this.content}}</pre>
+        <p id="comment-content-{{this.id}}">{{this.content}}</p>
         <br>
 
         <div class="d-flex justify-content-between">
@@ -91,19 +94,18 @@
     <hr>
   {{/each}}
 
-  {{#if editComment}}
-  {{else}}
-    <div id="comment-form">
-      <form action="/news/{{news.id}}/comments" method="POST" class="mb-3">
-        <div class="form-floating mb-3">
-          <textarea class="form-control" placeholder="Leave a comment here" id="comment" style="height: 100px"
-            name="comment"></textarea>
-          <label for="comment">評論</label>
-        </div>
-        <button type="submit" class="btn btn-primary">留言</button>
-      </form>
-    </div>
-  {{/if}}
+  {{!-- post comment section --}}
+  <div id="comment-form">
+    <form action="/news/{{news.id}}/comments" method="POST" class="mb-3">
+      <div class="form-floating mb-3">
+        <textarea class="form-control" placeholder="Leave a comment here" id="comment" style="height: 100px"
+          name="comment"></textarea>
+        <label for="comment">評論</label>
+      </div>
+      <button type="submit" class="btn btn-primary">留言</button>
+    </form>
+  </div>
+  
 </div>
 
 <script src="/javascripts/comments-form-submit.js"></script>

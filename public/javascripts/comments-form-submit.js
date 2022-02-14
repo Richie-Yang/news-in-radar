@@ -6,7 +6,7 @@ commentSection.addEventListener('click', function onCommentSectionClicked(event)
     const commentId = Number(event.target.dataset.commentId)
 
     const comment = document.querySelector(`#comment-${commentId}`)
-    const commentContent = document.querySelector(`#comment-content-${commentId}`).innerText.trim()
+    const commentContent = document.querySelector(`#comment-content-${commentId}`).innerText
 
     const editCommentTemplate = `
       <form action="/news/${newsId}/comments/${commentId}?_method=PUT" method="POST" class="mb-3">

@@ -32,7 +32,6 @@ router.get('/logout', userController.logout)
 router.get('/register', userController.registerPage)
 router.post('/register', userController.register)
 
-router.get('/news/:newsId/comments/:commentId/edit', authenticated, commentController.editComment)
 router.put('/news/:newsId/comments/:commentId', authenticated, commentController.putComment)
 router.delete('/news/:newsId/comments/:commentId', authenticated, commentController.deleteComment)
 router.post('/news/:newsId/comments/:commentId', authenticated, commentController.postComment)
