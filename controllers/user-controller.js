@@ -84,12 +84,10 @@ module.exports = {
 
     if (!user) throw new Error('這位使用者已經不存在了')
 
-    console.log(user)
     user = {
       ...user.toJSON(),
       isEditable: sessionUserId === requestUserId
     }
-
 
     const commentSet = new Set()
     user.Comments = user.Comments.filter(c => {

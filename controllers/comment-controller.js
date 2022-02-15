@@ -10,14 +10,20 @@ module.exports = {
 
       if (!content.trim()) throw new Error('評論欄位不能為空')
 
-      const [_, news] = await Promise.all([
+      const [_, user, news] = await Promise.all([
         Comment.create({
           content, newsId, userId, commentId
         }),
-        News.findByPk(newsId)
+        User.findByPk(userId, { 
+          attributes: ['id', 'totalComments']
+        }),
+        News.findByPk(newsId, {
+          attributes: ['id', 'totalComments']
+        })
       ])
 
       if (!news) throw new Error('新聞已經不存在了')
+      await user.increment('totalComments', { by: 1 })
       await news.increment('totalComments', { by: 1 })
 
       req.flash('success_messages', '評論已經成功送出')
@@ -53,23 +59,31 @@ module.exports = {
       const { newsId, commentId } = req.params
       const userId = req.user.id
 
-      const [comment, replies, news] = await Promise.all([
+      const [rootComment, childComments, news, likes] = await Promise.all([
         Comment.findOne({
+          attributes: ['id'],
           where: { id: commentId, newsId, userId }
         }),
         Comment.findAndCountAll({
+          attributes: ['id'],
           where: { commentId }
         }),
-        News.findByPk(newsId)
+        News.findByPk(newsId, {
+          attributes: ['id', 'totalComments']
+        }),
+        Like.findAll({
+          where: { commentId }
+        })
       ])
 
-      if (!comment) throw new Error('評論已經不存在了')
+      if (!rootComment) throw new Error('評論已經不存在了')
       if (!news) throw new Error('新聞已經不存在了')
 
       await Promise.all([
-        comment.destroy(),
-        ...replies.rows.map(reply => reply.destroy()),
-        news.decrement('totalComments', { by: replies.count + 1 })
+        rootComment.destroy(),
+        ...childComments.rows.map(c => c.destroy()),
+        news.decrement('totalComments', { by: childComments.count + 1 }),
+        ...likes.map(l => l.destroy())
       ])
       
       req.flash('success_messages', '評論已經成功刪除')
@@ -84,8 +98,11 @@ module.exports = {
       const userId = req.user.id
 
       const [comment, like] = await Promise.all([
-        Comment.findByPk(commentId),
+        Comment.findByPk(commentId, {
+          attributes: ['id', 'totalLikes', 'userId'],
+        }),
         Like.findOne({
+          attributes: ['id'],
           where: { commentId, userId }
         })
       ])
@@ -93,7 +110,13 @@ module.exports = {
       if (!comment) throw new Error('評論已經不存在了')
       if (like) throw new Error('你已經喜歡過這個評論')
 
+      const user = await User.findByPk(comment.userId, {
+        attributes: ['id', 'totalLikes']
+      })
+      if (!user) throw new Error('這個使用者已經不存在了')
+
       await Promise.all([
+        user.increment('totalLikes', { by: 1 }),
         comment.increment('totalLikes', { by: 1 }),
         Like.create({ commentId, userId })
       ])
@@ -109,7 +132,9 @@ module.exports = {
       const userId = req.user.id
 
       const [comment, like] = await Promise.all([
-        Comment.findByPk(commentId),
+        Comment.findByPk(commentId, {
+          attributes: ['id', 'totalLikes', 'userId']
+        }),
         Like.findOne({
           where: { commentId, userId }
         })
@@ -118,7 +143,13 @@ module.exports = {
       if (!comment) throw new Error('評論已經不存在了')
       if (!like) throw new Error('你尚未喜歡過這個評論')
 
+      const user = await User.findByPk(comment.userId, {
+        attributes: ['id', 'totalLikes']
+      })
+      if (!user) throw new Error('這個使用者已經不存在了')
+
       await Promise.all([
+        user.decrement('totalLikes', { by: 1 }),
         comment.decrement('totalLikes', { by: 1 }),
         like.destroy()
       ])
