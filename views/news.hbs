@@ -1,15 +1,17 @@
 <div class="row">
   <div id="news" class="col-12 col-md-8">
-    <h4 class="text-center">{{news.title}}</h4>
-    <div id="news-image" class="mx-auto" style="background-image: url('{{news.urlToImage}}');"></div>
-    <br>
-    <p>{{news.description}}</p>
-    <div class="d-flex justify-content-between">
-      <div>
-        <p>來源出處: {{news.author}}</p>
-        <p>發佈時間: {{news.publishedAt}}</p>
+    <div class="news-text">
+      <h4 class="text-center">{{news.title}}</h4>
+      <div id="news-image" class="mx-auto" style="background-image: url('{{news.urlToImage}}');"></div>
+      <br>
+      <p>{{news.description}}</p>
+      <div class="d-flex justify-content-between">
+        <div>
+          <p>來源出處: {{news.author}}</p>
+          <p>發佈時間: {{news.publishedAt}}</p>
+        </div>
+        <a href="{{news.url}}" target="_blank">點我閱讀新聞內容</a>
       </div>
-      <a href="{{news.url}}" target="_blank">點我閱讀新聞內容</a>
     </div>
 
     <hr>
@@ -17,7 +19,7 @@
     {{> comments}}
   </div>
 
-  <div class="col-12 col-md-4">
+  <div class="col-12 col-md-4 news-text">
     <h5>同樣新聞出處: </h5>
     {{#if relatedNews}}
       {{#each relatedNews}}

@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs')
+const sequelize = require("sequelize")
 const { User, Comment, News } = require('../models')
 
 module.exports = {
@@ -57,34 +58,54 @@ module.exports = {
     return res.redirect('/login')
   },
 
-  getUser: (req, res, next) => {
+  getUser: async (req, res, next) => {
     const sessionUserId = req.user.id
     const requestUserId = Number(req.params.userId)
+    const DEFAULT_COUNT = 14
 
-    return User.findByPk(requestUserId, {
-      include: [
-        { model: News, as: 'LikedNewsForUsers' },
-        {  model: Comment, include: News }
-      ],
-      nest: true
-    })
-      .then(user => {
-        if (!user) throw new Error('這位使用者已經不存在了')
+    let [user, comments] = await Promise.all([
+      User.findByPk(requestUserId, {
+        include: [
+          { model: News, as: 'LikedNewsForUsers' },
+          { model: Comment, include: News }
+        ],
+        nest: true
+      }),
 
-        user = {
-          ...user.toJSON(),
-          isEditable: sessionUserId === requestUserId
-        }
-        
-        const commentSet = new Set()
-        user.Comments = user.Comments.filter(c => {
-          return !commentSet.has(c.newsId) 
-            ? commentSet.add(c.newsId)
-            : false
-        })
-
-        return res.render('users/profile', { user })
+      Comment.findAll({
+        include: News,
+        where: { userId: requestUserId },
+        order: [['totalLikes', 'DESC']],
+        limit: 3,
+        raw: true,
+        nest: true
       })
-      .catch(err => next(err))
+    ])
+
+    if (!user) throw new Error('這位使用者已經不存在了')
+
+    console.log(user)
+    user = {
+      ...user.toJSON(),
+      isEditable: sessionUserId === requestUserId
+    }
+
+
+    const commentSet = new Set()
+    user.Comments = user.Comments.filter(c => {
+      return !commentSet.has(c.newsId) && commentSet.size < DEFAULT_COUNT
+        ? commentSet.add(c.newsId)
+        : false
+    })
+
+    user.LikedNewsForUsers = user.LikedNewsForUsers.sort(
+      (pre, next) => next.id - pre.id
+    )
+
+    user.Comments = user.Comments.sort(
+      (pre, next) => next.id - pre.id
+    )
+
+    return res.render('users/profile', { user, comments })
   }
 }

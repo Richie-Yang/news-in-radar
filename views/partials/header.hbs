@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
   <div class="container">
     <a class="navbar-brand" href="/">新聞雷達</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -11,7 +11,7 @@
       <ul class="navbar-nav mb-2 mb-lg-0">
         {{#if isAuthenticated}}
         <li class="nav-item">
-          <a class="nav-link disabled text-dark" href="/">歡迎回來! {{user.name}}</a>
+          <a class="nav-link" href="/">歡迎回來! {{user.name}}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/users/{{user.id}}">我的頁面</a>
