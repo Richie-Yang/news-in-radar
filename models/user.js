@@ -36,10 +36,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init({
     name: DataTypes.STRING,
+    image: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     isAdmin: DataTypes.BOOLEAN,
     isSeed: DataTypes.BOOLEAN,
+    totalComments: DataTypes.INTEGER,
+    totalLikes: DataTypes.INTEGER,
     totalFollowers: DataTypes.INTEGER,
     totalFollowings: DataTypes.INTEGER
   }, {
