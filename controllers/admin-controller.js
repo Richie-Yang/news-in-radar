@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { Op } = require("sequelize")
-const { News, User, Category } = require('../models')
+const { News, User, Category, Comment, Like } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
@@ -88,20 +88,32 @@ module.exports = {
       .catch(err => next(err))
   },
 
-  deleteNews: (req, res, next) => {
-    const { newsId } = req.params
+  deleteNews: async (req, res, next) => {
+    try {
+      const { newsId } = req.params
 
-    return News.findByPk(newsId)
-      .then(news => {
-        if (!news) throw new Error('這個新聞已不存在')
+      const [news, comments, likes] = await Promise.all([
+        News.findByPk(newsId),
+        Comment.findAll({
+          where: { newsId }
+        }),
+        Like.findAll({
+          where: { newsId }
+        })
+      ])
 
-        return news.destroy()
-      })
-      .then(() => {
-        req.flash('success_messages', '新聞內容已經成功刪除')
-        return res.redirect('back')
-      })
-      .catch(err => next(err))
+      if (!news) throw new Error('這個新聞已不存在')
+
+      await Promise.all([
+        news.destroy(),
+        ...comments.map(c => c.destroy()),
+        ...likes.map(l => l.destroy())
+      ])
+
+      req.flash('success_messages', '新聞內容已經成功刪除')
+      return res.redirect('back')
+
+    } catch (err) { next(err) }
   },
 
   getUsers: (req, res, next) => {
@@ -165,25 +177,33 @@ module.exports = {
       .catch(err => next(err))
   },
 
-  deleteUser: (req, res, next) => {
-    const { userId } = req.params
+  deleteUser: async (req, res, next) => {
+    try {
+      const { userId } = req.params
 
-    return User.findByPk(userId)
-      .then(user => {
-        if (!user) throw new Error('使用者已不存在')
+      const [user, likes] = await Promise.all([
+        User.findByPk(userId),
+        Like.findAll({
+          where: { userId }
+        })
+      ])
+      
+      if (!user) throw new Error('使用者已不存在')
 
-        const { name, email } = user
-        if (name === 'root' && email === 'root@example.com') {
-          throw new Error('管理者權限是禁止刪除的')
-        }
+      const { name, email } = user
+      if (name === 'root' && email === 'root@example.com') {
+        throw new Error('管理者權限是禁止刪除的')
+      }
 
-        return user.destroy()
-      })
-      .then(() => {
-        req.flash('success_messages', '使用者已經成功刪除')
-        return res.redirect('back')
-      })
-      .catch(err => next(err))
+      await Promise.all([
+        user.destroy(),
+        ...likes.map(l => l.destroy())
+      ])
+
+      req.flash('success_messages', '使用者已經成功刪除')
+      return res.redirect('back')
+
+    } catch (err) { next(err) }
   },
 
   getCategories: (req, res, next) => {
