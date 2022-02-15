@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs')
-const sequelize = require("sequelize")
 const { User, Comment, News } = require('../models')
+const { imgurFileHandler } = require('../helpers/file-helpers')
 
 module.exports = {
   loginPage: (req, res) => {
@@ -104,6 +104,61 @@ module.exports = {
       (pre, next) => next.id - pre.id
     )
 
-    return res.render('users/profile', { user, comments })
+    return res.render('users/profile', {
+      user, comments, getProfile: true
+    })
+  },
+
+  editUser: (req, res, next) => {
+    const userId = req.user.id
+
+    return User.findByPk(userId, { raw: true })
+      .then(user => {
+        if (!user) throw new Error('這位使用者已經不存在了')
+
+        return res.render('users/profile', {
+          user, editProfile: true
+        })
+      })
+      .catch(err => next(err))
+  },
+
+  putUser: async (req, res, next) => {
+    try {
+      const userId = req.user.id
+      const {
+        name, description, passwordEditCheck, password, confirmPassword 
+      } = req.body
+      const { file } = req
+      let hash
+
+      if(!name.trim()) throw new Error('名稱欄位必填')
+      if (passwordEditCheck === 'on') {
+        if (password.trim() !== confirmPassword.trim()) {
+          throw new Error('密碼欄位並不符合')
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        hash = await bcrypt.hash(password.trim(), salt)
+      }
+      
+      const [user, filePath] = await Promise.all([
+        User.findByPk(userId),
+        imgurFileHandler(file)
+      ])
+
+      if (!user) throw new Error('這位使用者已經不存在了')
+
+      await user.update({
+        name: name.trim(),
+        image: filePath || user.image,
+        description,
+        password: hash || user.password
+      })
+
+      req.flash('success_messages', '個人資訊已經成功修改')
+      return res.redirect(`/users/${userId}`)
+
+    } catch (err) { next(err) }
   }
 }

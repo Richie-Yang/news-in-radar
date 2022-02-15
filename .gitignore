@@ -105,3 +105,6 @@ dist
 
 # Custom for this project
 *.sql
+
+# Custom for News In Radar project
+temp/

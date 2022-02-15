@@ -1,0 +1,61 @@
+<div class="card profile-first-layer">
+  <div class="card-header">
+    <span>最近已喜愛過的新聞</span>
+  </div>
+  <div class="card-body d-flex flex-wrap p-2 profile-second-layer rounded-bottom">
+    {{#each user.LikedNewsForUsers}}
+    <a href="/news/{{this.id}}"><img class="liked-news" src="{{this.urlToImage}}" alt=""></a>
+    {{/each}}
+  </div>
+</div>
+
+<br>
+
+<div class="card profile-first-layer">
+  <div class="card-header">
+    <span>最近已評論過的新聞</span>
+  </div>
+  <div class="card-body d-flex flex-wrap p-2 profile-second-layer rounded-bottom">
+    {{#each user.Comments}}
+    <a href="/news/{{this.newsId}}"><img class="liked-news" src="{{this.News.urlToImage}}" alt=""></a>
+    {{/each}}
+  </div>
+</div>
+
+<br>
+
+<div class="card profile-first-layer">
+  <div class="card-header">
+    <span>最受歡迎的前三個評論</span>
+  </div>
+  <div class="card-body p-2 profile-second-layer rounded-bottom">
+    {{#each comments}}
+    <a href="/news/{{this.newsId}}" class="text-decoration-none p-2">
+
+      <div class="d-md-none align-items-center">
+        <strong>{{this.News.title}}</strong>
+        <div class="d-flex align-items-center my-3">
+          <img class="liked-news me-3" src="{{this.News.urlToImage}}" alt="">
+          <p>留言內容: {{this.content}}</p>
+        </div>
+        <strong>喜歡總數: {{this.totalLikes}}</strong>
+        <p class="m-0">commented at {{fromNow this.updatedAt}}</p>
+      </div>
+
+      <div class="d-none d-md-flex flex-md-row align-items-center">
+        <img class="liked-news me-3" src="{{this.News.urlToImage}}" alt="">
+        <div class="flex-grow-1">
+          <strong>{{this.News.title}}</strong>
+          <p>留言內容: {{this.content}}</p>
+          <div class="d-flex justify-content-between">
+            <strong>喜歡總數: {{this.totalLikes}}</strong>
+            <p class="m-0 align-self-center">commented at {{fromNow this.updatedAt}}</p>
+          </div>
+        </div>
+      </div>
+
+    </a>
+    <hr>
+    {{/each}}
+  </div>
+</div>
