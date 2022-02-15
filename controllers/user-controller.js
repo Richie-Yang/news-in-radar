@@ -105,7 +105,7 @@ module.exports = {
     )
 
     return res.render('users/profile', {
-      user, comments, getProfile: true
+      requestUser: user, comments, getProfile: true
     })
   },
 
@@ -117,7 +117,7 @@ module.exports = {
         if (!user) throw new Error('這位使用者已經不存在了')
 
         return res.render('users/profile', {
-          user, editProfile: true
+          requestUser: user, editProfile: true
         })
       })
       .catch(err => next(err))

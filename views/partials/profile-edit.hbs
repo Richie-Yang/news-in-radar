@@ -3,7 +3,7 @@
     <h5>編輯個人資訊</h5>
   </div>
 
-  <form action="/users/{{user.id}}?_method=PUT" method="POST" enctype="multipart/form-data" class="card-body">
+  <form action="/users/{{requestUser.id}}?_method=PUT" method="POST" enctype="multipart/form-data" class="card-body">
     <div class="mb-3">
       <label for="image" class="form-label">個人頭像</label>
       <input class="form-control" type="file" id="image" name="image">
@@ -12,12 +12,12 @@
     <div class="mb-3">
       <label for="name" class="form-label">名稱</label>
       <code>*</code>
-      <input type="text" class="form-control" id="name" name="name" value="{{user.name}}" placeholder="請輸入名稱">
+      <input type="text" class="form-control" id="name" name="name" value="{{requestUser.name}}" placeholder="請輸入名稱">
     </div>
     
     <div class="mb-3">
       <label for="description" class="form-label">個人簡介</label>
-      <textarea class="form-control" name="description" id="description" cols="30" rows="10" placeholder="這邊可以簡短介紹一下自己唷">{{user.description}}</textarea>
+      <textarea class="form-control" name="description" id="description" cols="30" rows="10" placeholder="這邊可以簡短介紹一下自己唷">{{requestUser.description}}</textarea>
     </div>
 
     <div class="form-check mb-3">
@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <a href="/users/{{user.id}}" class="btn btn-info">返回</a>
+    <a href="/users/{{requestUser.id}}" class="btn btn-info">返回</a>
     <button type="submit" class="btn btn-primary">儲存</button>
   </form>
 

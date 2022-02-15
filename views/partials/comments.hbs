@@ -5,7 +5,7 @@
   {{#each news.Comments}}
     <div class="d-flex justify-content-between">
       <div class="d-flex">
-        <h5 class="me-2">{{this.User.name}}</h5>
+        <a href="/users/{{this.userId}}"><h5 class="me-2">{{this.User.name}}</h5></a>
         <p class="m-0 align-self-center">commented at {{fromNow this.updatedAt}}: </p>
       </div>
 

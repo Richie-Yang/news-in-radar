@@ -1,36 +1,38 @@
 <div id="profile" class="d-flex flex-column flex-md-row justify-content-center rounded">
   <div class="m-2 p-2 rounded profile-first-layer">
     <div id="profile-image" class="mx-auto">
-      {{#if user.image}}
-        <img src="{{user.image}}" alt="profile-image" class="w-100">
+      {{#if requestUser.image}}
+        <img src="{{requestUser.image}}" alt="profile-image" class="w-100">
       {{else}}
-        <img src="https://www.venmond.com/demo/vendroid/img/avatar/big.jpg" alt="profile-image" class="w-100">
+        <img src="https://via.placeholder.com/250?text=No+Image" alt="profile-image" class="w-100">
       {{/if}}
     </div>
 
     <hr>
 
     <div class="text-center">
-      <h3>{{user.name}}</h3>
-      <h6><a href="mailto://{{user.email}}">{{user.email}}</a></h6>
+      <h3>{{requestUser.name}}</h3>
+      <h6><a href="mailto://{{requestUser.email}}">{{requestUser.email}}</a></h6>
       {{#if getProfile}}
-        <h6><a href="/users/{{user.id}}/edit">編輯</a></h6>
+        {{#ifCond requestUser.id user.id}}
+          <h6><a href="/users/{{requestUser.id}}/edit">編輯</a></h6>
+        {{/ifCond}}
       {{/if}}
     </div>
     
     <hr>
 
     <div class="text-center">
-      <p>{{user.description}}</p>
+      <p>{{requestUser.description}}</p>
     </div>
 
     <hr>
 
     <ul class="list-group list-group-flush news-text">
-      <li class="list-group-item profile-second-layer">總評論數量: {{user.totalComments}}</li>
-      <li class="list-group-item profile-second-layer">被點讚數量: {{user.totalLikes}}</li>
-      <li class="list-group-item profile-second-layer">已追隨數量: {{user.totalFollowings}}</li>
-      <li class="list-group-item profile-second-layer">被追隨數量: {{user.totalFollowers}}</li>
+      <li class="list-group-item profile-second-layer">總評論數量: {{requestUser.totalComments}}</li>
+      <li class="list-group-item profile-second-layer">被點讚數量: {{requestUser.totalLikes}}</li>
+      <li class="list-group-item profile-second-layer">已追隨數量: {{requestUser.totalFollowings}}</li>
+      <li class="list-group-item profile-second-layer">被追隨數量: {{requestUser.totalFollowers}}</li>
     </ul>
     <hr>
 

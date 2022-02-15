@@ -3,7 +3,7 @@
     <span>最近已喜愛過的新聞</span>
   </div>
   <div class="card-body d-flex flex-wrap p-2 profile-second-layer rounded-bottom">
-    {{#each user.LikedNewsForUsers}}
+    {{#each requestUser.LikedNewsForUsers}}
     <a href="/news/{{this.id}}"><img class="liked-news" src="{{this.urlToImage}}" alt=""></a>
     {{/each}}
   </div>
@@ -16,7 +16,7 @@
     <span>最近已評論過的新聞</span>
   </div>
   <div class="card-body d-flex flex-wrap p-2 profile-second-layer rounded-bottom">
-    {{#each user.Comments}}
+    {{#each requestUser.Comments}}
     <a href="/news/{{this.newsId}}"><img class="liked-news" src="{{this.News.urlToImage}}" alt=""></a>
     {{/each}}
   </div>
