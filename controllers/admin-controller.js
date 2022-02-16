@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { Op } = require("sequelize")
-const { News, User, Category, Comment, Like } = require('../models')
+const { News, User, Category, Comment, Like, Followship } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 module.exports = {
@@ -179,12 +179,20 @@ module.exports = {
 
   deleteUser: async (req, res, next) => {
     try {
-      const { userId } = req.params
+      const userId = Number(req.params.userId)
 
-      const [user, likes] = await Promise.all([
+      const [user, likes, followships] = await Promise.all([
         User.findByPk(userId),
         Like.findAll({
           where: { userId }
+        }),
+        Followship.findAll({
+          where: { 
+            [Op.or]: [
+              { followerId: userId },
+              { followingId: userId }
+            ]
+          }
         })
       ])
       
@@ -197,7 +205,8 @@ module.exports = {
 
       await Promise.all([
         user.destroy(),
-        ...likes.map(l => l.destroy())
+        ...likes.map(l => l.destroy()),
+        ...followships.map(f => f.destroy())
       ])
 
       req.flash('success_messages', '使用者已經成功刪除')

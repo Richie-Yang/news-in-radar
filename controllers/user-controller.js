@@ -85,12 +85,12 @@ module.exports = {
     ])
 
     if (!user) throw new Error('這位使用者已經不存在了')
-    const followingIdArray = req.user.Followings.map(f => f.id)
+    const followerIdArray = user.Followers.map(f => f.id)
 
     user = {
       ...user.toJSON(),
       isEditable: sessionUserId === requestUserId,
-      isFollowed: followingIdArray.some(f => f === requestUserId)
+      isFollowed: followerIdArray.some(f => f === sessionUserId)
     }
 
     // sort user.LikedNewsForUsers
@@ -174,7 +174,7 @@ module.exports = {
       const followerId = req.user.id
       const { followingId } = req.params
 
-      const { followship, follower, following } = await Promise.all([
+      const [ followship, follower, following ] = await Promise.all([
         Followship.findOne({
           where: { followerId, followingId },
           raw: true
@@ -209,7 +209,7 @@ module.exports = {
       const followerId = req.user.id
       const { followingId } = req.params
 
-      const { followship, follower, following } = await Promise.all([
+      const [ followship, follower, following ] = await Promise.all([
         Followship.findOne({
           where: { followerId, followingId }
         }),
