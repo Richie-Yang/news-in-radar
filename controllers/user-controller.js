@@ -89,20 +89,23 @@ module.exports = {
       isEditable: sessionUserId === requestUserId
     }
 
+    // sort user.LikedNewsForUsers
+    user.LikedNewsForUsers = user.LikedNewsForUsers.sort(
+      (pre, next) => next.id - pre.id
+    )
+
+    // sort user.Comments
+    user.Comments = user.Comments.sort(
+      (pre, next) => next.id - pre.id
+    )
+
+    // filter for only first 14 rows of results from user.Comments
     const commentSet = new Set()
     user.Comments = user.Comments.filter(c => {
       return !commentSet.has(c.newsId) && commentSet.size < DEFAULT_COUNT
         ? commentSet.add(c.newsId)
         : false
     })
-
-    user.LikedNewsForUsers = user.LikedNewsForUsers.sort(
-      (pre, next) => next.id - pre.id
-    )
-
-    user.Comments = user.Comments.sort(
-      (pre, next) => next.id - pre.id
-    )
 
     return res.render('users/profile', {
       requestUser: user, comments, getProfile: true
