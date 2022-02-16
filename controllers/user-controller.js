@@ -67,6 +67,8 @@ module.exports = {
       User.findByPk(requestUserId, {
         include: [
           { model: News, as: 'LikedNewsForUsers' },
+          { model: User, as: 'Followings' },
+          { model: User, as: 'Followers' },
           { model: Comment, include: News }
         ],
         nest: true
@@ -167,44 +169,70 @@ module.exports = {
     } catch (err) { next(err) }
   },
 
-  postFollowship: (req, res, next) => {
-    const followerId = req.user.id
-    const { followingId } = req.params
+  postFollowship: async (req, res, next) => {
+    try {
+      const followerId = req.user.id
+      const { followingId } = req.params
 
-    return Followship.findOne({
-      where: { followerId, followingId },
-      raw: true
-    })
-      .then(followship => {
-        if (followship) throw new Error('你已經追隨過該使用者')
-
-        return Followship.create({
-          followerId, followingId
+      const { followship, follower, following } = await Promise.all([
+        Followship.findOne({
+          where: { followerId, followingId },
+          raw: true
+        }),
+        User.findByPk(followerId, {
+          attributes: ['id', 'totalFollowings']
+        }),
+        User.findByPk(followingId, {
+          attributes: ['id', 'totalFollowers']
         })
-      })
-      .then(() => {
-        req.flash('success_messages', '你已經成功追隨該使用者')
-        return res.redirect('back')
-      })
-      .catch(err => next(err))
+      ])
+
+      if (followship) throw new Error('你已經追隨過該使用者')
+      if (!follower || !following) throw new Error('追隨或是被追隨者已不存在')
+
+      await Promise.all([
+        Followship.create({
+          followerId, followingId
+        }),
+        follower.increment('totalFollowings', { by: 1 }),
+        following.increment('totalFollowers', { by: 1 })
+      ])
+
+      req.flash('success_messages', '你已經成功追隨該使用者')
+      return res.redirect('back')
+
+    } catch (err) { next(err) }
   },
 
-  deleteFollowship: (req, res, next) => {
-    const followerId = req.user.id
-    const { followingId } = req.params
+  deleteFollowship: async (req, res, next) => {
+    try {
+      const followerId = req.user.id
+      const { followingId } = req.params
 
-    return Followship.findOne({
-      where: { followerId, followingId }
-    })
-      .then(followship => {
-        if (!followship) throw new Error('你尚未追隨過該使用者')
+      const { followship, follower, following } = await Promise.all([
+        Followship.findOne({
+          where: { followerId, followingId }
+        }),
+        User.findByPk(followerId, {
+          attributes: ['id', 'totalFollowings']
+        }),
+        User.findByPk(followingId, {
+          attributes: ['id', 'totalFollowers']
+        })
+      ])
 
-        return followship.destroy()
-      })
-      .then(() => {
-        req.flash('success_messages', '你已經停止追隨該使用者')
-        return res.redirect('back')
-      })
-      .catch(err => next(err))
+      if (!followship) throw new Error('你尚未追隨過該使用者')
+      if (!follower || !following) throw new Error('追隨或是被追隨者已不存在')
+
+      await Promise.all([
+        followship.destroy(),
+        follower.decrement('totalFollowings', { by: 1 }),
+        following.decrement('totalFollowers', { by: 1 })
+      ])
+
+      req.flash('success_messages', '你已經停止追隨該使用者')
+      return res.redirect('back')
+
+    } catch (err) { next(err) }
   }
 }

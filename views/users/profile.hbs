@@ -30,21 +30,79 @@
       {{/if}}
     </div>
     
-    <hr>
+    <br>
 
-    <div class="text-center">
-      <p>{{requestUser.description}}</p>
+    <div>
+      <div class="d-flex">
+        <p class="me-2">個人簡介</p>
+        <hr class="d-block flex-grow-1">
+      </div>
+
+      {{#if requestUser.description}}
+        <p>{{requestUser.description}}</p>
+      {{else}}
+        <code>目前尚無</code>
+      {{/if}}
     </div>
 
-    <hr>
+    <br>
 
     <ul class="list-group list-group-flush news-text">
+      <div class="d-flex">
+        <p class="me-2">貢獻統計</p>
+        <hr class="d-block flex-grow-1">
+      </div>
       <li class="list-group-item profile-second-layer">總評論數量: {{requestUser.totalComments}}</li>
       <li class="list-group-item profile-second-layer">被點讚數量: {{requestUser.totalLikes}}</li>
       <li class="list-group-item profile-second-layer">已追隨數量: {{requestUser.totalFollowings}}</li>
       <li class="list-group-item profile-second-layer">被追隨數量: {{requestUser.totalFollowers}}</li>
     </ul>
-    <hr>
+
+    <br>
+
+    <div>
+      <div class="d-flex">
+        <p class="me-2">他正在追隨誰呢?</p>
+        <hr class="d-block flex-grow-1">
+      </div>
+      {{#if requestUser.Followings}}
+      <div class="row row-cols-4 profile-second-layer mx-auto">
+        {{#each requestUser.Followings}}
+          {{#if this.image}}
+          <a href="/users/{{this.id}}"><img class="mini-profile-image my-2" src="{{this.image}}" alt="{{this.name}}"></a>
+          {{else}}
+          <a href="/users/{{this.id}}"><img class="mini-profile-image my-2"
+              src="https://via.placeholder.com/50?text={{this.name}}" alt="{{this.name}}"></a>
+          {{/if}}
+        {{/each}}
+      </div>
+      {{else}}
+      <code>目前尚無</code>
+      {{/if}}
+    </div>
+
+    <br>
+    
+    <div>
+      <div class="d-flex">
+        <p class="me-2">誰正在追隨他呢?</p>
+        <hr class="d-block flex-grow-1">
+      </div>
+      {{#if requestUser.Followers}}
+      <div class="row row-cols-4 profile-second-layer mx-auto">
+        {{#each requestUser.Followers}}
+          {{#if this.image}}
+          <a href="/users/{{this.id}}"><img class="mini-profile-image my-2" src="{{this.image}}" alt="{{this.name}}"></a>
+          {{else}}
+          <a href="/users/{{this.id}}"><img class="mini-profile-image my-2"
+              src="https://via.placeholder.com/50?text={{this.name}}" alt="{{this.name}}"></a>
+          {{/if}}
+        {{/each}}
+      </div>
+      {{else}}
+      <code>目前尚無</code>
+      {{/if}}
+    </div>
 
   </div>
 

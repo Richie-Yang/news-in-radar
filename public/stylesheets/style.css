@@ -65,6 +65,14 @@ hr {
   overflow: hidden;
 }
 
+#profile .mini-profile-image {
+  /* outline: 3px solid tomato; */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
 #profile .liked-news {
   width: 125px;
   height: 85px;
