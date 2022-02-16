@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { User, Comment, News } = require('../models')
+const { User, Comment, News, Followship } = require('../models')
 const { imgurFileHandler } = require('../helpers/file-helpers')
 
 module.exports = {
@@ -83,10 +83,12 @@ module.exports = {
     ])
 
     if (!user) throw new Error('這位使用者已經不存在了')
+    const followingIdArray = req.user.Followings.map(f => f.id)
 
     user = {
       ...user.toJSON(),
-      isEditable: sessionUserId === requestUserId
+      isEditable: sessionUserId === requestUserId,
+      isFollowed: followingIdArray.some(f => f === requestUserId)
     }
 
     // sort user.LikedNewsForUsers
@@ -163,5 +165,46 @@ module.exports = {
       return res.redirect(`/users/${userId}`)
 
     } catch (err) { next(err) }
+  },
+
+  postFollowship: (req, res, next) => {
+    const followerId = req.user.id
+    const { followingId } = req.params
+
+    return Followship.findOne({
+      where: { followerId, followingId },
+      raw: true
+    })
+      .then(followship => {
+        if (followship) throw new Error('你已經追隨過該使用者')
+
+        return Followship.create({
+          followerId, followingId
+        })
+      })
+      .then(() => {
+        req.flash('success_messages', '你已經成功追隨該使用者')
+        return res.redirect('back')
+      })
+      .catch(err => next(err))
+  },
+
+  deleteFollowship: (req, res, next) => {
+    const followerId = req.user.id
+    const { followingId } = req.params
+
+    return Followship.findOne({
+      where: { followerId, followingId }
+    })
+      .then(followship => {
+        if (!followship) throw new Error('你尚未追隨過該使用者')
+
+        return followship.destroy()
+      })
+      .then(() => {
+        req.flash('success_messages', '你已經停止追隨該使用者')
+        return res.redirect('back')
+      })
+      .catch(err => next(err))
   }
 }

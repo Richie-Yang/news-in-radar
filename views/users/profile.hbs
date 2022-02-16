@@ -15,7 +15,17 @@
       <h6><a href="mailto://{{requestUser.email}}">{{requestUser.email}}</a></h6>
       {{#if getProfile}}
         {{#ifCond requestUser.id user.id}}
-          <h6><a href="/users/{{requestUser.id}}/edit">編輯</a></h6>
+          <a href="/users/{{requestUser.id}}/edit" class="btn btn-primary">編輯</a>
+        {{else}}
+          {{#if requestUser.isFollowed}}
+            <form action="/users/{{requestUser.id}}/followship?_method=DELETE" method="POST">
+              <button type="submit" class="btn btn-secondary">取消追隨</button>
+            </form>
+          {{else}}
+            <form action="/users/{{requestUser.id}}/followship" method="POST">
+              <button type="submit" class="btn btn-primary">追隨</button>
+            </form>
+          {{/if}}
         {{/ifCond}}
       {{/if}}
     </div>
