@@ -1,6 +1,8 @@
 # news-in-radar
 News-in-radar, the web service which provides latest news for visitors.
 
+You can visit the dmeo website here: https://news-in-radar.herokuapp.com/news
+
 
 ## Motivation
 I did spend from several months to almost years seting up IT environment at my home, and one thing which always was bugging my mind is the lack of customimzed portal for WiFi entry point. However, if I just simply built plain HTML page, it's going to be boring. So after I got the web-dev skill, the first priority thing for me is to build a WiFi portal which is more than just that. The whole project is to display news contents, and all of them are done automatically. 
@@ -84,6 +86,12 @@ password: 123
 Second seed user
 ```
 email: user2@example.com
+password: 123
+```
+
+Seed Administrator
+```
+email: root@example.com
 password: 123
 ```
 
