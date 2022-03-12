@@ -19,37 +19,34 @@ module.exports = {
     return res.render('register')
   },
 
-  register: (req, res, next) => {
-    const { 
-      name, email, password, confirmPassword 
-    } = req.body
+  register: async (req, res, next) => {
+    try {
+      const {
+        name, email, password, confirmPassword
+      } = req.body
 
-    if (!email || !password || !confirmPassword) {
-      throw new Error('信箱, 密碼, 確認密碼欄位都是必填')
-    }
-    if (password !== confirmPassword) {
-      throw new Error('密碼欄位不符')
-    }
+      if (!email || !password || !confirmPassword) {
+        throw new Error('信箱, 密碼, 確認密碼欄位都是必填')
+      }
 
-    return User.findOne({ where: { email } })
-      .then(user => {
-        if (user) throw new Error('信箱已經被使用過')
+      if (password !== confirmPassword) {
+        throw new Error('密碼欄位不符')
+      }
 
-        return bcrypt.genSalt(10)
+      const user = await User.findOne({ where: { email } })
+      if (user) throw new Error('信箱已經被使用過')
+
+      const salt = await bcrypt.genSalt(10)
+      const hash = await bcrypt.hash(password, salt)
+
+      await User.create({
+        name: name || email, email, password: hash
       })
-      .then(salt => bcrypt.hash(password, salt))
-      .then(hash => {
-        const inputName = name ? name : email
 
-        return User.create({
-          name: inputName, email, password: hash
-        })
-      })
-      .then(() => {
-        req.flash('success_messages', '帳號已經成功註冊')
-        res.redirect('/login')
-      })
-      .catch(err => next(err))
+      req.flash('success_messages', '帳號已經成功註冊')
+      res.redirect('/login')
+
+    } catch (err) { next(err) }
   },
 
   logout: (req, res) => {
@@ -59,75 +56,77 @@ module.exports = {
   },
 
   getUser: async (req, res, next) => {
-    const sessionUserId = req.user.id
-    const requestUserId = Number(req.params.userId)
-    const DEFAULT_COUNT = 14
+    try {
+      const sessionUserId = req.user.id
+      const requestUserId = Number(req.params.userId)
+      const DEFAULT_COUNT = 14
 
-    let [user, comments] = await Promise.all([
-      User.findByPk(requestUserId, {
-        include: [
-          { model: News, as: 'LikedNewsForUsers' },
-          { model: User, as: 'Followings' },
-          { model: User, as: 'Followers' },
-          { model: Comment, include: News }
-        ],
-        nest: true
-      }),
+      let [user, comments] = await Promise.all([
+        User.findByPk(requestUserId, {
+          include: [
+            { model: News, as: 'LikedNewsForUsers' },
+            { model: User, as: 'Followings' },
+            { model: User, as: 'Followers' },
+            { model: Comment, include: News }
+          ],
+          nest: true
+        }),
 
-      Comment.findAll({
-        include: News,
-        where: { userId: requestUserId },
-        order: [['totalLikes', 'DESC']],
-        limit: 3,
-        raw: true,
-        nest: true
+        Comment.findAll({
+          include: News,
+          where: { userId: requestUserId },
+          order: [['totalLikes', 'DESC']],
+          limit: 3,
+          raw: true,
+          nest: true
+        })
+      ])
+
+      if (!user) throw new Error('這位使用者已經不存在了')
+      const followerIdArray = user.Followers.map(f => f.id)
+
+      user = {
+        ...user.toJSON(),
+        isEditable: sessionUserId === requestUserId,
+        isFollowed: followerIdArray.some(f => f === sessionUserId)
+      }
+
+      // sort user.LikedNewsForUsers
+      user.LikedNewsForUsers = user.LikedNewsForUsers.sort(
+        (pre, next) => next.id - pre.id
+      )
+
+      // sort user.Comments
+      user.Comments = user.Comments.sort(
+        (pre, next) => next.id - pre.id
+      )
+
+      // filter for only first 14 rows of results from user.Comments
+      const commentSet = new Set()
+      user.Comments = user.Comments.filter(c => {
+        return !commentSet.has(c.newsId) && commentSet.size < DEFAULT_COUNT
+          ? commentSet.add(c.newsId)
+          : false
       })
-    ])
 
-    if (!user) throw new Error('這位使用者已經不存在了')
-    const followerIdArray = user.Followers.map(f => f.id)
+      return res.render('users/profile', {
+        requestUser: user, comments, getProfile: true
+      })
 
-    user = {
-      ...user.toJSON(),
-      isEditable: sessionUserId === requestUserId,
-      isFollowed: followerIdArray.some(f => f === sessionUserId)
-    }
-
-    // sort user.LikedNewsForUsers
-    user.LikedNewsForUsers = user.LikedNewsForUsers.sort(
-      (pre, next) => next.id - pre.id
-    )
-
-    // sort user.Comments
-    user.Comments = user.Comments.sort(
-      (pre, next) => next.id - pre.id
-    )
-
-    // filter for only first 14 rows of results from user.Comments
-    const commentSet = new Set()
-    user.Comments = user.Comments.filter(c => {
-      return !commentSet.has(c.newsId) && commentSet.size < DEFAULT_COUNT
-        ? commentSet.add(c.newsId)
-        : false
-    })
-
-    return res.render('users/profile', {
-      requestUser: user, comments, getProfile: true
-    })
+    } catch (err) { next(err) }
   },
 
-  editUser: (req, res, next) => {
-    const userId = req.user.id
+  editUser: async (req, res, next) => {
+    try {
+      const userId = req.user.id
 
-    return User.findByPk(userId, { raw: true })
-      .then(user => {
-        if (!user) throw new Error('這位使用者已經不存在了')
+      const user = await User.findByPk(userId, { raw: true })
+      if (!user) throw new Error('這位使用者已經不存在了')
 
-        return res.render('users/profile', {
-          requestUser: user, editProfile: true
-        })
+      return res.render('users/profile', {
+        requestUser: user, editProfile: true
       })
-      .catch(err => next(err))
+    } catch (err) { next(err) }
   },
 
   putUser: async (req, res, next) => {
