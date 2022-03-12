@@ -19,7 +19,7 @@
   </ul>
 </div>
 
-<table class="table">
+<table id="admin-table" class="table">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -58,7 +58,7 @@
           <td>{{this.name}}</td>
           <td class="d-flex">
             <a href="/admin/categories/{{this.id}}/edit" class="btn btn-primary me-2">編輯</a>
-            <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST">
+            <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST" class="delete-form" data-name="類別" data-id="{{this.id}}">
               <button type="submit" class="btn btn-danger">刪除</button>
             </form>
           </td>
@@ -69,3 +69,5 @@
 </table>
 
 {{> pagination pageRoute="/admin/categories"}}
+
+<script src="/javascripts/delete-form-submit.js"></script>

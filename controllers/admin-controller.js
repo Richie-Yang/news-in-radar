@@ -2,6 +2,7 @@ const moment = require('moment')
 const { Op } = require("sequelize")
 const { News, User, Category, Comment, Like, Followship } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const { axiosErrorHandler } = require('../middleware/error-handler')
 
 module.exports = {
   getNewsList: (req, res, next) => {
@@ -303,8 +304,8 @@ module.exports = {
       })
       .then(() => {
         req.flash('success_messages', '類別已經成功刪除')
-        return res.redirect('/admin/categories')
+        res.status(200).json({ message: 'ok' })
       })
-      .catch(err => next(err))
+      .catch(err => axiosErrorHandler(err, req, res))
   }
 }
