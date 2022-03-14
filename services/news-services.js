@@ -36,7 +36,6 @@ module.exports = {
       for (let i = apiArray.length - 1; i > 0; i--) {
         if (apiArray[i].data.status !== 'ok') throw new Error('新聞自動化擷取程序出錯')
 
-        
         if (apiSet.has(apiArray[i].title)) {
           apiArray.splice(i, 1)
         } else {
@@ -54,17 +53,12 @@ module.exports = {
       // therefore, it's necessary to use flatMap to flat out our nest array.
       const promiseArray = apiArray.flatMap((apiItem, index) => {
         return Array.from({ length: apiItem.data.articles.length }, async (_, i) => {
-          const {
-            title, description, url, publishedAt
-          } = apiItem.data.articles[i]
+          const { title, description, url, publishedAt } = apiItem.data.articles[i]
 
-          const author = apiItem.data.articles[i].author
-            ? apiItem.data.articles[i].author
-            : '尚無出處'
+          const author = apiItem.data.articles[i].author || '尚無出處'
+          const urlToImage = apiItem.data.articles[i].urlToImage || 
+            'https://via.placeholder.com/642x500?text=No+Image+Available'
 
-          const urlToImage = apiItem.data.articles[i].urlToImage
-            ? apiItem.data.articles[i].urlToImage
-            : 'https://via.placeholder.com/642x500?text=No+Image+Available'
 
           const news = await News.findOne({ where: { title } })
           if (!news) {
