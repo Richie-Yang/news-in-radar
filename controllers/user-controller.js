@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { User, Comment, News, Followship } = require('../models')
 const { imgurFileHandler } = require('../helpers/file-helpers')
+const { registerValidation } = require('../middleware/validator')
 
 module.exports = {
   loginPage: (req, res) => {
@@ -21,16 +22,11 @@ module.exports = {
 
   register: async (req, res, next) => {
     try {
-      const {
-        name, email, password, confirmPassword
-      } = req.body
-
-      if (!email || !password || !confirmPassword) {
-        throw new Error('信箱, 密碼, 確認密碼欄位都是必填')
-      }
-
-      if (password !== confirmPassword) {
-        throw new Error('密碼欄位不符')
+      const { name, email, password } = req.body
+      
+      const validatedResult = registerValidation(req.body)
+      if (validatedResult !== 'ok') {
+        throw new Error(validatedResult)
       }
 
       const user = await User.findOne({ where: { email } })
