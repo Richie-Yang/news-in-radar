@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { User, Comment, News, Followship } = require('../models')
 const { imgurFileHandler } = require('../helpers/file-helpers')
-const { registerValidation } = require('../middleware/validator')
+const { registerValidation } = require('../helpers/validate-helpers')
 
 module.exports = {
   loginPage: (req, res) => {
