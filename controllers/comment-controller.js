@@ -32,26 +32,25 @@ module.exports = {
     } catch (err) { next(err) }
   },
 
-  putComment: (req, res, next) => {
-    const { newsId, commentId } = req.params
-    let content = req.body.comment.trim()
-    const userId = req.user.id
+  putComment: async (req, res, next) => {
+    try {
+      const { newsId, commentId } = req.params
+      let content = req.body.comment.trim()
+      const userId = req.user.id
 
-    if (!content) throw new Error('評論欄位不能為空')
-    
-    return Comment.findOne({
-      where: { id: commentId, newsId, userId }
-    })
-      .then(comment => {
-        if (!comment) throw new Error('評論已經不存在了')
+      if (!content) throw new Error('評論欄位不能為空')
 
-        return comment.update({ content })
+      const comment = await Comment.findOne({
+        where: { id: commentId, newsId, userId }
       })
-      .then(() => {
-        req.flash('success_messages', '評論已經成功修改')
-        return res.redirect(`/news/${newsId}`)
-      })
-      .catch(err => next(err))
+
+      if (!comment) throw new Error('評論已經不存在了')
+      comment.update({ content })
+
+      req.flash('success_messages', '評論已經成功修改')
+      return res.redirect(`/news/${newsId}`)
+
+    } catch (err) { next(err) }
   },
 
   deleteComment: async (req, res, next) => {
