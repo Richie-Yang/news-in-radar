@@ -5,7 +5,7 @@ module.exports = {
     return a === b ? options.fn(this) : options.inverse(this)
   },
 
-  moment: (a) => moment(a).format('YYYY/MM/DD'),
-  fromNow: (a) => moment(a).fromNow(),
+  moment: a => moment(a).format('YYYY/MM/DD'),
+  fromNow: a => moment(a).fromNow(),
   currentYear: () => moment().format('YYYY')
 }

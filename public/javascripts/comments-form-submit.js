@@ -1,6 +1,6 @@
 const commentSection = document.querySelector('#comment-section')
 
-commentSection.addEventListener('click', function onCommentSectionClicked(event) {
+commentSection.addEventListener('click', function onCommentSectionClicked (event) {
   if (event.target.classList.contains('edit-button')) {
     const newsId = Number(event.target.dataset.newsId)
     const commentId = Number(event.target.dataset.commentId)
@@ -23,9 +23,9 @@ commentSection.addEventListener('click', function onCommentSectionClicked(event)
 
     const originalTemplate = comment.innerHTML
     comment.innerHTML = editCommentTemplate
-    
+
     const backButton = document.querySelector(`#back-button-${commentId}`)
-    backButton.addEventListener('click', function onBackButtonClicked() {
+    backButton.addEventListener('click', function onBackButtonClicked () {
       comment.innerHTML = originalTemplate
     }, { once: true })
   }
@@ -53,7 +53,7 @@ commentSection.addEventListener('click', function onCommentSectionClicked(event)
     commentForm.innerHTML = replyCommentTemplate
 
     const backButton = document.querySelector(`#back-button-reply-${commentId}`)
-    backButton.addEventListener('click', function onBackButtonClicked() {
+    backButton.addEventListener('click', function onBackButtonClicked () {
       commentForm.innerHTML = originalTemplate
     }, { once: true })
   }

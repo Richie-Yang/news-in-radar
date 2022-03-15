@@ -1,4 +1,4 @@
-const { Op } = require("sequelize")
+const { Op } = require('sequelize')
 const { Comment, News, User, Like } = require('../models')
 
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
         Comment.create({
           content, newsId, userId, commentId
         }),
-        User.findByPk(userId, { 
+        User.findByPk(userId, {
           attributes: ['id', 'totalComments']
         }),
         News.findByPk(newsId, {
@@ -28,14 +28,13 @@ module.exports = {
 
       req.flash('success_messages', '評論已經成功送出')
       return res.redirect('back')
-
     } catch (err) { next(err) }
   },
 
   putComment: async (req, res, next) => {
     try {
       const { newsId, commentId } = req.params
-      let content = req.body.comment.trim()
+      const content = req.body.comment.trim()
       const userId = req.user.id
 
       if (!content) throw new Error('評論欄位不能為空')
@@ -49,7 +48,6 @@ module.exports = {
 
       req.flash('success_messages', '評論已經成功修改')
       return res.redirect(`/news/${newsId}`)
-
     } catch (err) { next(err) }
   },
 
@@ -84,10 +82,9 @@ module.exports = {
         news.decrement('totalComments', { by: childComments.count + 1 }),
         ...likes.map(l => l.destroy())
       ])
-      
+
       req.flash('success_messages', '評論已經成功刪除')
       return res.redirect('back')
-
     } catch (err) { next(err) }
   },
 
@@ -98,7 +95,7 @@ module.exports = {
 
       const [comment, like] = await Promise.all([
         Comment.findByPk(commentId, {
-          attributes: ['id', 'totalLikes', 'userId'],
+          attributes: ['id', 'totalLikes', 'userId']
         }),
         Like.findOne({
           attributes: ['id'],
@@ -121,7 +118,6 @@ module.exports = {
       ])
 
       return res.redirect('back')
-
     } catch (err) { next(err) }
   },
 
@@ -154,7 +150,6 @@ module.exports = {
       ])
 
       return res.redirect('back')
-
     } catch (err) { next(err) }
   }
 }

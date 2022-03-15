@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { Op } = require("sequelize")
+const { Op } = require('sequelize')
 const { News, Comment, User, Like, Category } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const newsServices = require('../services/news-services')
@@ -33,15 +33,14 @@ module.exports = {
         ],
         NEWS_API_KEY: [
           process.env.NEWS_API_KEY_1,
-          process.env.NEWS_API_KEY_2,
+          process.env.NEWS_API_KEY_2
         ],
         PAGE_SIZE
       }
 
-      await newsServices.genNewsList(data, (err) => {
+      await newsServices.genNewsList(data, err => {
         err ? next(err) : next()
       })
-
     } catch (err) { next(err) }
   },
 
@@ -54,7 +53,8 @@ module.exports = {
 
       keyword = keyword ? keyword.trim() : ''
       filter = filter && filter !== 'none'
-        ? filter : "DESC"
+        ? filter
+        : 'DESC'
 
       const where = {
         [Op.or]: {
@@ -115,11 +115,12 @@ module.exports = {
 
       // using eager loading to get two rows comment data
       let news = await News.findByPk(newsId, {
-        include: { 
-          model: Comment, include: [
+        include: {
+          model: Comment,
+          include: [
             { model: User },
             { model: Comment, as: 'ReplyComments', include: User }
-          ] 
+          ]
         },
         nest: true
       })
@@ -146,7 +147,7 @@ module.exports = {
 
         // assign to one variable for later simplicity
         const replyComments = news.Comments[x].ReplyComments
-        
+
         if (replyComments.length) {
           // loop child comments (second row) to insert 'isLiked' and 'isEditable'
           for (let y = 0; y < replyComments.length; y++) {
@@ -158,14 +159,13 @@ module.exports = {
         }
       }
 
-      let relatedNews = await News.findAll({
+      const relatedNews = await News.findAll({
         where: { author: news.author, id: { [Op.ne]: news.id } },
         limit: 5,
         raw: true
       })
 
       return res.render('news', { news, relatedNews })
-
     } catch (err) { next(err) }
   },
 
@@ -190,7 +190,6 @@ module.exports = {
       ])
 
       return res.redirect('back')
-      
     } catch (err) { next(err) }
   },
 
@@ -215,7 +214,6 @@ module.exports = {
       ])
 
       return res.redirect('back')
-
     } catch (err) { next(err) }
   }
 }

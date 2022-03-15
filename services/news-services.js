@@ -56,9 +56,8 @@ module.exports = {
           const { title, description, url, publishedAt } = apiItem.data.articles[i]
 
           const author = apiItem.data.articles[i].author || '尚無出處'
-          const urlToImage = apiItem.data.articles[i].urlToImage || 
+          const urlToImage = apiItem.data.articles[i].urlToImage ||
             'https://via.placeholder.com/642x500?text=No+Image+Available'
-
 
           const news = await News.findOne({ where: { title } })
           if (!news) {
@@ -80,8 +79,6 @@ module.exports = {
       // may be processed incorrectly.
       await Promise.allSettled(promiseArray)
       return cb(null)
-
     } catch (err) { cb(err) }
-
   }
 }

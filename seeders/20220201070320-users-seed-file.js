@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 const bcrypt = require('bcryptjs')
 
 module.exports = {
@@ -12,41 +12,41 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   await queryInterface.bulkInsert('Users', [
-     {
-       name: 'root',
-       email: 'root@example.com',
-       password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
-       is_admin: true,
-       is_seed: true,
-       total_followers: 0,
-       total_followings: 0,
-       created_at: new Date(),
-       updated_at: new Date()
-     },
-     {
-       name: 'user1',
-       email: 'user1@example.com',
-       password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
-       is_admin: false,
-       is_seed: true,
-       total_followers: 0,
-       total_followings: 0,
-       created_at: new Date(),
-       updated_at: new Date()
-     },
-     {
-       name: 'user2',
-       email: 'user2@example.com',
-       password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
-       is_admin: false,
-       is_seed: true,
-       total_followers: 0,
-       total_followings: 0,
-       created_at: new Date(),
-       updated_at: new Date()
-     }
-   ], {})
+    await queryInterface.bulkInsert('Users', [
+      {
+        name: 'root',
+        email: 'root@example.com',
+        password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
+        is_admin: true,
+        is_seed: true,
+        total_followers: 0,
+        total_followings: 0,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        name: 'user1',
+        email: 'user1@example.com',
+        password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
+        is_admin: false,
+        is_seed: true,
+        total_followers: 0,
+        total_followings: 0,
+        created_at: new Date(),
+        updated_at: new Date()
+      },
+      {
+        name: 'user2',
+        email: 'user2@example.com',
+        password: bcrypt.hashSync('123', bcrypt.genSaltSync(10)),
+        is_admin: false,
+        is_seed: true,
+        total_followers: 0,
+        total_followings: 0,
+        created_at: new Date(),
+        updated_at: new Date()
+      }
+    ], {})
   },
 
   async down (queryInterface, Sequelize) {
@@ -58,4 +58,4 @@ module.exports = {
      */
     await queryInterface.bulkDelete('Users', { is_seed: true }, {})
   }
-};
+}

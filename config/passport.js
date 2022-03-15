@@ -12,7 +12,7 @@ passport.use(new LocalStrategy({
         req.flash('error_messages', '信箱或是密碼錯誤')
         return done(null, false)
       }
-      
+
       return bcrypt.compare(password, user.password)
         .then(isMatched => {
           if (!isMatched) {

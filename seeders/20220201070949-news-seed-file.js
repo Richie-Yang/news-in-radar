@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 const faker = require('faker')
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   await queryInterface.bulkInsert('News', 
+    await queryInterface.bulkInsert('News',
       Array.from({ length: 27 }, () => ({
         title: faker.lorem.sentence(),
         description: faker.lorem.paragraphs(),
@@ -26,7 +26,7 @@ module.exports = {
         created_at: new Date(),
         updated_at: new Date()
       })), {}
-   )
+    )
   },
 
   async down (queryInterface, Sequelize) {
@@ -38,4 +38,4 @@ module.exports = {
      */
     await queryInterface.bulkDelete('News', { is_seed: true }, {})
   }
-};
+}

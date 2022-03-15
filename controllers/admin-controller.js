@@ -1,5 +1,5 @@
 const moment = require('moment')
-const { Op } = require("sequelize")
+const { Op } = require('sequelize')
 const { News, User, Category, Comment, Like, Followship } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { axiosErrorHandler } = require('../middleware/error-handler')
@@ -13,8 +13,7 @@ module.exports = {
       const offset = getOffset(page, limit)
 
       keyword = keyword ? keyword.trim() : ''
-      filter = filter && filter !== 'none'
-        ? filter : "DESC"
+      filter = filter && filter !== 'none' ? filter : 'DESC'
 
       const { count, rows } = await News.findAndCountAll({
         where: {
@@ -35,7 +34,6 @@ module.exports = {
         keyword,
         filter
       })
-
     } catch (err) { next(err) }
   },
 
@@ -52,11 +50,10 @@ module.exports = {
 
       news = {
         ...news,
-        publishedAt: moment(news.publishedAt).format("YYYY-MM-DDThh:mm")
+        publishedAt: moment(news.publishedAt).format('YYYY-MM-DDThh:mm')
       }
 
       return res.render('admin/news-edit', { news, categories })
-
     } catch (err) { next(err) }
   },
 
@@ -86,7 +83,6 @@ module.exports = {
 
       req.flash('success_messages', '新聞內容已經成功修改')
       return res.redirect('/admin/news')
-
     } catch (err) { next(err) }
   },
 
@@ -114,7 +110,6 @@ module.exports = {
 
       req.flash('success_messages', '新聞內容已經成功刪除')
       return res.redirect('back')
-
     } catch (err) { next(err) }
   },
 
@@ -126,8 +121,7 @@ module.exports = {
       const offset = getOffset(page, limit)
 
       keyword = keyword ? keyword.trim() : ''
-      filter = filter && filter !== 'none'
-        ? filter : "DESC"
+      filter = filter && filter !== 'none' ? filter : 'DESC'
 
       let { count, rows } = await User.findAndCountAll({
         where: {
@@ -153,7 +147,6 @@ module.exports = {
         keyword,
         filter
       })
-
     } catch (err) { next(err) }
   },
 
@@ -172,7 +165,6 @@ module.exports = {
       await user.update({ isAdmin: !isAdmin })
       req.flash('success_messages', '使用者權限調整成功')
       return res.redirect('back')
-
     } catch (err) { next(err) }
   },
 
@@ -186,7 +178,7 @@ module.exports = {
           where: { userId }
         }),
         Followship.findAll({
-          where: { 
+          where: {
             [Op.or]: [
               { followerId: userId },
               { followingId: userId }
@@ -194,7 +186,6 @@ module.exports = {
           }
         })
       ])
-      
       if (!user) throw new Error('使用者已不存在')
 
       const { name, email } = user
@@ -210,7 +201,6 @@ module.exports = {
 
       req.flash('success_messages', '使用者已經成功刪除')
       return res.redirect('back')
-
     } catch (err) { next(err) }
   },
 
@@ -223,8 +213,7 @@ module.exports = {
       const offset = getOffset(page, limit)
 
       keyword = keyword ? keyword.trim() : ''
-      filter = filter && filter !== 'none'
-        ? filter : "DESC"
+      filter = filter && filter !== 'none' ? filter : 'DESC'
 
       let { count, rows } = await Category.findAndCountAll({
         where: {
@@ -252,7 +241,6 @@ module.exports = {
         keyword,
         filter
       })
-
     } catch (err) { next(err) }
   },
 
@@ -268,7 +256,6 @@ module.exports = {
 
       req.flash('success_messages', '類別已經成功建立')
       return res.redirect('/admin/categories')
-
     } catch (err) { next(err) }
   },
 
@@ -288,7 +275,6 @@ module.exports = {
 
       req.flash('success_messages', '類別已經成功修改')
       return res.redirect('/admin/categories')
-
     } catch (err) { next(err) }
   },
 
@@ -303,7 +289,6 @@ module.exports = {
 
       req.flash('success_messages', '類別已經成功刪除')
       return res.status(200).json({ message: 'ok' })
-
     } catch (err) { axiosErrorHandler(err, req, res) }
   }
 }

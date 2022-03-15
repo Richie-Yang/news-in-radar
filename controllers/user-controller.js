@@ -23,7 +23,7 @@ module.exports = {
   register: async (req, res, next) => {
     try {
       const { name, email, password } = req.body
-      
+
       const validatedResult = registerValidation(req.body)
       if (validatedResult !== 'ok') {
         throw new Error(validatedResult)
@@ -41,7 +41,6 @@ module.exports = {
 
       req.flash('success_messages', '帳號已經成功註冊')
       res.redirect('/login')
-
     } catch (err) { next(err) }
   },
 
@@ -108,7 +107,6 @@ module.exports = {
       return res.render('users/profile', {
         requestUser: user, comments, getProfile: true
       })
-
     } catch (err) { next(err) }
   },
 
@@ -129,12 +127,12 @@ module.exports = {
     try {
       const userId = req.user.id
       const {
-        name, description, passwordEditCheck, password, confirmPassword 
+        name, description, passwordEditCheck, password, confirmPassword
       } = req.body
       const { file } = req
       let hash
 
-      if(!name.trim()) throw new Error('名稱欄位必填')
+      if (!name.trim()) throw new Error('名稱欄位必填')
       if (passwordEditCheck === 'on') {
         if (password.trim() !== confirmPassword.trim()) {
           throw new Error('密碼欄位並不符合')
@@ -143,7 +141,7 @@ module.exports = {
         const salt = await bcrypt.genSalt(10)
         hash = await bcrypt.hash(password.trim(), salt)
       }
-      
+
       const [user, filePath] = await Promise.all([
         User.findByPk(userId),
         imgurFileHandler(file)
@@ -160,7 +158,6 @@ module.exports = {
 
       req.flash('success_messages', '個人資訊已經成功修改')
       return res.redirect(`/users/${userId}`)
-
     } catch (err) { next(err) }
   },
 
@@ -169,7 +166,7 @@ module.exports = {
       const followerId = req.user.id
       const { followingId } = req.params
 
-      const [ followship, follower, following ] = await Promise.all([
+      const [followship, follower, following] = await Promise.all([
         Followship.findOne({
           where: { followerId, followingId },
           raw: true
@@ -195,7 +192,6 @@ module.exports = {
 
       req.flash('success_messages', '你已經成功追隨該使用者')
       return res.redirect('back')
-
     } catch (err) { next(err) }
   },
 
@@ -204,7 +200,7 @@ module.exports = {
       const followerId = req.user.id
       const { followingId } = req.params
 
-      const [ followship, follower, following ] = await Promise.all([
+      const [followship, follower, following] = await Promise.all([
         Followship.findOne({
           where: { followerId, followingId }
         }),
@@ -227,7 +223,6 @@ module.exports = {
 
       req.flash('success_messages', '你已經停止追隨該使用者')
       return res.redirect('back')
-
     } catch (err) { next(err) }
   }
 }

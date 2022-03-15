@@ -6,10 +6,10 @@ module.exports = {
   },
 
   getPagination: (
-      currentPageNum = 1, numbersPerPage = 9, totalNumbers
-    ) => {
+    currentPageNum = 1, numbersPerPage = 9, totalNumbers
+  ) => {
     let totalPages = Math.ceil(Number(totalNumbers) / numbersPerPage)
-    totalPages = totalPages ? totalPages : 1
+    totalPages = totalPages || 1
 
     const minPage = 1
     const currentPage = currentPageNum < 1 ? 1 : currentPageNum > totalPages ? totalPages : currentPageNum
@@ -24,7 +24,7 @@ module.exports = {
     const displaySidePages = displayRightPages
 
     const pages = []
-    
+
     // only push page numbers between minPage and totalPages
     for (let i = displayLeftPages; i <= displayRightPages; i++) {
       if (currentPage + i > minPage && currentPage + i < totalPages) {
@@ -35,7 +35,7 @@ module.exports = {
     // prepend '...' if following conditions are met
     if (!pages.includes(minPage + 1) && pages.length >= displaySidePages) pages.unshift('...')
     pages.unshift(minPage)
-    
+
     // append '...' if following conditions are met
     if (!pages.includes(totalPages - 1) && pages.length >= displaySidePages) pages.push('...')
     if (minPage !== totalPages) pages.push(totalPages)

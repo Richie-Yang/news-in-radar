@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 const faker = require('faker')
 
 module.exports = {
@@ -12,27 +12,27 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   const [users, news] = await Promise.all([
-     queryInterface.sequelize.query(
-       'SELECT id FROM Users;',
-       { type: queryInterface.sequelize.QueryTypes.SELECT }
-     ),
-     queryInterface.sequelize.query(
-       'SELECT id FROM News;',
-       { type: queryInterface.sequelize.QueryTypes.SELECT }
-     ),
-   ])
+    const [users, news] = await Promise.all([
+      queryInterface.sequelize.query(
+        'SELECT id FROM Users;',
+        { type: queryInterface.sequelize.QueryTypes.SELECT }
+      ),
+      queryInterface.sequelize.query(
+        'SELECT id FROM News;',
+        { type: queryInterface.sequelize.QueryTypes.SELECT }
+      )
+    ])
 
-   await queryInterface.bulkInsert('Comments', 
-    Array.from({ length: 200 }, () => ({
-      content: faker.lorem.text(),
-      user_id: users[Math.floor(Math.random() * users.length)].id,
-      news_id: news[Math.floor(Math.random() * news.length)].id,
-      is_seed: true,
-      created_at: new Date(),
-      updated_at: new Date()
-    })), {}
-   )
+    await queryInterface.bulkInsert('Comments',
+      Array.from({ length: 200 }, () => ({
+        content: faker.lorem.text(),
+        user_id: users[Math.floor(Math.random() * users.length)].id,
+        news_id: news[Math.floor(Math.random() * news.length)].id,
+        is_seed: true,
+        created_at: new Date(),
+        updated_at: new Date()
+      })), {}
+    )
   },
 
   async down (queryInterface, Sequelize) {
@@ -44,4 +44,4 @@ module.exports = {
      */
     await queryInterface.bulkDelete('Comments', { is_seed: true }, {})
   }
-};
+}

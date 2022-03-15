@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = {
   async up (queryInterface, Sequelize) {
@@ -24,4 +24,4 @@ module.exports = {
      */
     await queryInterface.removeColumn('Users', 'total_likes', {})
   }
-};
+}
