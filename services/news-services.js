@@ -29,22 +29,16 @@ module.exports = {
       ])
 
       processData.categories = []
-      const apiSet = new Set()
       // because no category data are send back from API request,
       // so we have to remap category ID based on category data in our DB
       // at the same time, we will try to remove any duplicated news
-      for (let i = apiArray.length - 1; i > 0; i--) {
-        if (apiArray[i].data.status !== 'ok') throw new Error('新聞自動化擷取程序出錯')
+      apiArray.forEach((d, i) => {
+        if (d.data.status !== 'ok') throw new Error('新聞自動化擷取程序出錯')
 
-        if (apiSet.has(apiArray[i].title)) {
-          apiArray.splice(i, 1)
-        } else {
-          apiSet.add(apiArray[i].title)
-          processData.categories[i] = categories[categories.findIndex(
-            category => category.name === NEWS_API_QUERY_COUNTRY[i]
-          )].id
-        }
-      }
+        processData.categories[i] = categories[categories.findIndex(
+          category => category.name === NEWS_API_QUERY_COUNTRY[i]
+        )].id
+      })
 
       // this is more complex part...
       // previously, we send out several API requests to third party,
