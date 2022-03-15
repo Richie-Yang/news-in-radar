@@ -49,7 +49,7 @@ module.exports = {
         return Array.from({ length: apiItem.data.articles.length }, async (_, i) => {
           const { title, description, url, publishedAt } = apiItem.data.articles[i]
 
-          const author = apiItem.data.articles[i].author || '尚無出處'
+          const author = apiItem.data.articles[i].source.name || '尚無出處'
           const urlToImage = apiItem.data.articles[i].urlToImage ||
             'https://via.placeholder.com/642x500?text=No+Image+Available'
 
