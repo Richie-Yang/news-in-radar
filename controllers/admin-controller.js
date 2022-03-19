@@ -93,10 +93,14 @@ module.exports = {
       const [news, comments, likes] = await Promise.all([
         News.findByPk(newsId),
         Comment.findAll({
-          where: { newsId }
+          attributes: ['id'],
+          where: { newsId },
+          raw: true
         }),
         Like.findAll({
-          where: { newsId }
+          attributes: ['id'],
+          where: { newsId },
+          raw: true
         })
       ])
 
@@ -187,15 +191,19 @@ module.exports = {
       const [user, likes, followships] = await Promise.all([
         User.findByPk(userId),
         Like.findAll({
-          where: { userId }
+          attributes: ['id'],
+          where: { userId },
+          raw: true
         }),
         Followship.findAll({
+          attributes: ['id'],
           where: {
             [Op.or]: [
               { followerId: userId },
               { followingId: userId }
             ]
-          }
+          },
+          raw: true
         })
       ])
       if (!user) throw new Error('使用者已不存在')

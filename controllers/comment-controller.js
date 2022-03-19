@@ -68,13 +68,16 @@ module.exports = {
         }),
         Comment.findAndCountAll({
           attributes: ['id'],
-          where: { commentId }
+          where: { commentId },
+          raw: true
         }),
         News.findByPk(newsId, {
           attributes: ['id', 'totalComments']
         }),
         Like.findAll({
-          where: { commentId }
+          attributes: ['id'],
+          where: { commentId },
+          raw: true
         })
       ])
 
