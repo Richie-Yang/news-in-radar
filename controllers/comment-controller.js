@@ -1,5 +1,4 @@
-const { Op } = require('sequelize')
-const { Comment, News, User, Like } = require('../models')
+const { Comment, News, User, Like, sequelize } = require('../models')
 
 module.exports = {
   postComment: async (req, res, next) => {
@@ -10,21 +9,26 @@ module.exports = {
 
       if (!content.trim()) throw new Error('評論欄位不能為空')
 
-      const [_, user, news] = await Promise.all([
-        Comment.create({
-          content, newsId, userId, commentId
-        }),
-        User.findByPk(userId, {
-          attributes: ['id', 'totalComments']
-        }),
-        News.findByPk(newsId, {
-          attributes: ['id', 'totalComments']
-        })
-      ])
+      await sequelize.transaction(async t => {
+        const [user, news] = await Promise.all([
+          User.findByPk(userId, {
+            attributes: ['id', 'totalComments'],
+            transaction: t
+          }),
+          News.findByPk(newsId, {
+            attributes: ['id', 'totalComments'],
+            transaction: t
+          }),
+          Comment.create(
+            { content, newsId, userId, commentId },
+            { transaction: t }
+          )
+        ])
 
-      if (!news) throw new Error('新聞已經不存在了')
-      await user.increment('totalComments', { by: 1 })
-      await news.increment('totalComments', { by: 1 })
+        if (!news) throw new Error('新聞已經不存在了')
+        await user.increment('totalComments', { by: 1, transaction: t })
+        await news.increment('totalComments', { by: 1, transaction: t })
+      })
 
       req.flash('success_messages', '評論已經成功送出')
       return res.redirect('back')
@@ -76,12 +80,16 @@ module.exports = {
       if (!rootComment) throw new Error('評論已經不存在了')
       if (!news) throw new Error('新聞已經不存在了')
 
-      await Promise.all([
-        rootComment.destroy(),
-        ...childComments.rows.map(c => c.destroy()),
-        news.decrement('totalComments', { by: childComments.count + 1 }),
-        ...likes.map(l => l.destroy())
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          rootComment.destroy({ transaction: t }),
+          ...childComments.rows.map(c => c.destroy({ transaction: t })),
+          news.decrement('totalComments', {
+            by: childComments.count + 1, transaction: t
+          }),
+          ...likes.map(l => l.destroy({ transaction: t }))
+        ])
+      })
 
       req.flash('success_messages', '評論已經成功刪除')
       return res.redirect('back')
@@ -111,11 +119,13 @@ module.exports = {
       })
       if (!user) throw new Error('這個使用者已經不存在了')
 
-      await Promise.all([
-        user.increment('totalLikes', { by: 1 }),
-        comment.increment('totalLikes', { by: 1 }),
-        Like.create({ commentId, userId })
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          user.increment('totalLikes', { by: 1, transaction: t }),
+          comment.increment('totalLikes', { by: 1, transaction: t }),
+          Like.create({ commentId, userId }, { transaction: t })
+        ])
+      })
 
       return res.redirect('back')
     } catch (err) { next(err) }
@@ -143,11 +153,13 @@ module.exports = {
       })
       if (!user) throw new Error('這個使用者已經不存在了')
 
-      await Promise.all([
-        user.decrement('totalLikes', { by: 1 }),
-        comment.decrement('totalLikes', { by: 1 }),
-        like.destroy()
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          user.decrement('totalLikes', { by: 1, transaction: t }),
+          comment.decrement('totalLikes', { by: 1, transaction: t }),
+          like.destroy({ transaction: t })
+        ])
+      })
 
       return res.redirect('back')
     } catch (err) { next(err) }

@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { Op } = require('sequelize')
-const { News, Comment, User, Like, Category } = require('../models')
+const { News, Comment, User, Like, Category, sequelize } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const newsServices = require('../services/news-services')
 
@@ -184,10 +184,12 @@ module.exports = {
       if (!news) throw new Error('新聞已經不存在了')
       if (like) throw new Error('你已經喜歡過這則新聞')
 
-      await Promise.all([
-        news.increment('totalLikes', { by: 1 }),
-        Like.create({ newsId, userId })
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          news.increment('totalLikes', { by: 1, transaction: t }),
+          Like.create({ newsId, userId }, { transaction: t })
+        ])
+      })
 
       return res.redirect('back')
     } catch (err) { next(err) }
@@ -208,10 +210,12 @@ module.exports = {
       if (!news) throw new Error('新聞已經不存在了')
       if (!like) throw new Error('你尚未喜歡過這則新聞')
 
-      await Promise.all([
-        news.decrement('totalLikes', { by: 1 }),
-        like.destroy()
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          news.decrement('totalLikes', { by: 1, transaction: t }),
+          like.destroy({ transaction: t })
+        ])
+      })
 
       return res.redirect('back')
     } catch (err) { next(err) }

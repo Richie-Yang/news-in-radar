@@ -1,6 +1,6 @@
 const moment = require('moment')
 const { Op } = require('sequelize')
-const { News, User, Category, Comment, Like, Followship } = require('../models')
+const { News, User, Category, Comment, Like, Followship, sequelize } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { axiosErrorHandler } = require('../middleware/error-handler')
 
@@ -102,11 +102,13 @@ module.exports = {
 
       if (!news) throw new Error('這個新聞已不存在')
 
-      await Promise.all([
-        news.destroy(),
-        ...comments.map(c => c.destroy()),
-        ...likes.map(l => l.destroy())
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          news.destroy({ transaction: t }),
+          ...comments.map(c => c.destroy({ transaction: t })),
+          ...likes.map(l => l.destroy({ transaction: t }))
+        ])
+      })
 
       req.flash('success_messages', '新聞內容已經成功刪除')
       return res.redirect('back')
@@ -193,11 +195,13 @@ module.exports = {
         throw new Error('管理者權限是禁止刪除的')
       }
 
-      await Promise.all([
-        user.destroy(),
-        ...likes.map(l => l.destroy()),
-        ...followships.map(f => f.destroy())
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          user.destroy({ transaction: t }),
+          ...likes.map(l => l.destroy({ transaction: t })),
+          ...followships.map(f => f.destroy({ transaction: t }))
+        ])
+      })
 
       req.flash('success_messages', '使用者已經成功刪除')
       return res.redirect('back')

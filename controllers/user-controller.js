@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { User, Comment, News, Followship } = require('../models')
+const { User, Comment, News, Followship, sequelize } = require('../models')
 const { imgurFileHandler } = require('../helpers/file-helpers')
 const { registerValidation } = require('../helpers/validate-helpers')
 
@@ -182,13 +182,13 @@ module.exports = {
       if (followship) throw new Error('你已經追隨過該使用者')
       if (!follower || !following) throw new Error('追隨或是被追隨者已不存在')
 
-      await Promise.all([
-        Followship.create({
-          followerId, followingId
-        }),
-        follower.increment('totalFollowings', { by: 1 }),
-        following.increment('totalFollowers', { by: 1 })
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          Followship.create({ followerId, followingId }, { transaction: t }),
+          follower.increment('totalFollowings', { by: 1, transaction: t }),
+          following.increment('totalFollowers', { by: 1, transaction: t })
+        ])
+      })
 
       req.flash('success_messages', '你已經成功追隨該使用者')
       return res.redirect('back')
@@ -215,11 +215,13 @@ module.exports = {
       if (!followship) throw new Error('你尚未追隨過該使用者')
       if (!follower || !following) throw new Error('追隨或是被追隨者已不存在')
 
-      await Promise.all([
-        followship.destroy(),
-        follower.decrement('totalFollowings', { by: 1 }),
-        following.decrement('totalFollowers', { by: 1 })
-      ])
+      await sequelize.transaction(async t => {
+        await Promise.all([
+          followship.destroy({ transaction: t }),
+          follower.decrement('totalFollowings', { by: 1, transaction: t }),
+          following.decrement('totalFollowers', { by: 1, transaction: t })
+        ])
+      })
 
       req.flash('success_messages', '你已經停止追隨該使用者')
       return res.redirect('back')
