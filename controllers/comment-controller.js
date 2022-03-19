@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const { Comment, News, User, Like, sequelize } = require('../models')
 
 module.exports = {
@@ -83,11 +84,21 @@ module.exports = {
       await sequelize.transaction(async t => {
         await Promise.all([
           rootComment.destroy({ transaction: t }),
-          ...childComments.rows.map(c => c.destroy({ transaction: t })),
+          Comment.destroy({
+            where: {
+              id: { [Op.in]: childComments.rows.map(c => c.id) }
+            },
+            transaction: t
+          }),
           news.decrement('totalComments', {
             by: childComments.count + 1, transaction: t
           }),
-          ...likes.map(l => l.destroy({ transaction: t }))
+          Like.destroy({
+            where: {
+              id: { [Op.in]: likes.map(l => l.id) }
+            },
+            transaction: t
+          })
         ])
       })
 

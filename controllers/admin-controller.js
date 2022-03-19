@@ -105,8 +105,18 @@ module.exports = {
       await sequelize.transaction(async t => {
         await Promise.all([
           news.destroy({ transaction: t }),
-          ...comments.map(c => c.destroy({ transaction: t })),
-          ...likes.map(l => l.destroy({ transaction: t }))
+          Comment.destroy({
+            where: {
+              id: { [Op.in]: comments.map(c => c.id) }
+            },
+            transaction: t
+          }),
+          Like.destroy({
+            where: {
+              id: { [Op.in]: likes.map(l => l.id) }
+            },
+            transaction: t
+          })
         ])
       })
 
@@ -198,8 +208,18 @@ module.exports = {
       await sequelize.transaction(async t => {
         await Promise.all([
           user.destroy({ transaction: t }),
-          ...likes.map(l => l.destroy({ transaction: t })),
-          ...followships.map(f => f.destroy({ transaction: t }))
+          Like.destroy({
+            where: {
+              id: { [Op.in]: likes.map(l => l.id) }
+            },
+            transaction: t
+          }),
+          Followship.destroy({
+            where: {
+              id: { [Op.in]: followships.map(f => f.id) }
+            },
+            transaction: t
+          })
         ])
       })
 
