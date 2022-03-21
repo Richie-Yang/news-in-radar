@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { User, Comment, News, Followship, sequelize } = require('../models')
 const { imgurFileHandler } = require('../helpers/file-helpers')
-const { registerValidation } = require('../helpers/validate-helpers')
+const ValidateHelper = require('../helpers/validate-helper')
 
 module.exports = {
   loginPage: (req, res) => {
@@ -22,12 +22,11 @@ module.exports = {
 
   register: async (req, res, next) => {
     try {
-      const { name, email, password } = req.body
+      const errors = []
+      const { name, email, password, confirmPassword } = req.body
 
-      const validatedResult = registerValidation(req.body)
-      if (validatedResult !== 'ok') {
-        throw new Error(validatedResult)
-      }
+      const validate = new ValidateHelper(errors)
+      validate.registerCheck(email, password, confirmPassword)
 
       const user = await User.findOne({ where: { email } })
       if (user) throw new Error('信箱已經被使用過')
@@ -125,6 +124,7 @@ module.exports = {
 
   putUser: async (req, res, next) => {
     try {
+      const errors = []
       const userId = req.user.id
       const {
         name, description, passwordEditCheck, password, confirmPassword
@@ -134,9 +134,8 @@ module.exports = {
 
       if (!name.trim()) throw new Error('名稱欄位必填')
       if (passwordEditCheck === 'on') {
-        if (password.trim() !== confirmPassword.trim()) {
-          throw new Error('密碼欄位並不符合')
-        }
+        const validate = new ValidateHelper(errors)
+        validate.editUserCheck(password, confirmPassword)
 
         const salt = await bcrypt.genSalt(10)
         hash = await bcrypt.hash(password.trim(), salt)
