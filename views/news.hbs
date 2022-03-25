@@ -1,5 +1,5 @@
 <div class="row">
-  <div id="news" class="col-12 col-md-8">
+  <div id="news" class="col-12 col-lg-8">
     <div class="news-text">
       <h4 class="text-center">{{news.title}}</h4>
       <div id="news-image" class="mx-auto" style="background-image: url('{{news.urlToImage}}');"></div>
@@ -19,13 +19,13 @@
     {{> comments}}
   </div>
 
-  <div class="col-12 col-md-4 news-text">
+  <div class="col-12 col-lg-4 news-text">
     <h5>同樣新聞出處: </h5>
     {{#if relatedNews}}
       {{#each relatedNews}}
       <a href="/news/{{this.id}}">
-        <div class="mx-auto position-relative"
-          style="background-image: linear-gradient(180deg, rgba(0,0,0,.7) 0%, rgba(71,70,70,0) 50%, rgba(0,0,0,.7) 100%), url('{{this.urlToImage}}');background-position: center; background-size: cover; width: 75%; height: 200px;">
+        <div class="mx-auto position-relative news-side-image"
+          style="background-image: linear-gradient(180deg, rgba(0,0,0,.7) 0%, rgba(71,70,70,0) 50%, rgba(0,0,0,.7) 100%), url('{{this.urlToImage}}');">
           <p class="text-white position-absolute bottom-0 m-0 p-2">{{this.title}}</p>
         </div>
       </a>
