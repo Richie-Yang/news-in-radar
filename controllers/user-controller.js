@@ -34,8 +34,19 @@ module.exports = {
       const salt = await bcrypt.genSalt(10)
       const hash = await bcrypt.hash(password, salt)
 
+      // generate related validation material
+      const validationSalt = await bcrypt.genSalt(10)
+      const validationTime = Date.now()
+      const validationCode = await bcrypt.hash(
+        `${name}@${validationTime}`, validationSalt
+      )
+
       await User.create({
-        name: name || email, email, password: hash
+        name: name || email,
+        email,
+        password: hash,
+        validationCode,
+        validationTime
       })
 
       req.flash('success_messages', '帳號已經成功註冊')
