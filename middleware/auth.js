@@ -13,8 +13,8 @@ module.exports = {
     return res.redirect('/login')
   },
 
-  isActivated: (req, res, next) => {
-    return req.isActive
+  activated: (req, res, next) => {
+    return req.user.isActive
       ? next()
       : res.redirect('/verify')
   }

@@ -7,7 +7,7 @@ const admin = require('./modules/admin')
 const user = require('./modules/user')
 const news = require('./modules/news')
 const comment = require('./modules/comment')
-const { authenticated, authenticatedAdmin } = require('../middleware/auth')
+const { authenticated, authenticatedAdmin, activated } = require('../middleware/auth')
 const { generalErrorHandler } = require('../middleware/error-handler')
 
 router.use('/', newsController.genNewsList)
@@ -15,7 +15,7 @@ router.use('/', newsController.genNewsList)
 router.get('/login', userController.loginPage)
 router.post('/login', passport.authenticate(
   'local', { failureRedirect: '/login' }
-), userController.login)
+), activated, userController.login)
 router.get('/logout', userController.logout)
 router.get('/register', userController.registerPage)
 router.post('/register', userController.register)
