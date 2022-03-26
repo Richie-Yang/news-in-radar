@@ -1,6 +1,6 @@
 module.exports = {
   authenticated: (req, res, next) => {
-    req.isAuthenticated() && req.user.isActive
+    return req.isAuthenticated()
       ? next()
       : res.redirect('/login')
   },
@@ -11,5 +11,11 @@ module.exports = {
       return res.redirect('/')
     }
     return res.redirect('/login')
+  },
+
+  isActivated: (req, res, next) => {
+    return req.isActive
+      ? next()
+      : res.redirect('/verify')
   }
 }
