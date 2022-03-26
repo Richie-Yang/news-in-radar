@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 const { User, Comment, News, Followship, sequelize } = require('../models')
 const { imgurFileHandler } = require('../helpers/file-helpers')
 const ValidateHelper = require('../helpers/validate-helper')
+const userServices = require('../services/user-services')
 
 module.exports = {
   loginPage: (req, res) => {
@@ -48,6 +49,10 @@ module.exports = {
         validationCode,
         validationTime
       })
+
+      await userServices.verificationSent(
+        email, req.headers.host, validationCode
+      )
 
       req.flash('success_messages', '帳號已經成功註冊')
       res.redirect('/login')
