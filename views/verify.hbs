@@ -1,0 +1,19 @@
+<h3>信箱認證</h3>
+
+<p>會員電子信箱認證通知信 已經寄到 {{email}}，如果您尚未收到相關信件，可以點擊下面按鈕重新寄送認證信件。</p>
+
+<form id="verify-form" action="/verify?status=email_verify" method="POST">
+  <div class="d-flex mb-3" style="font-size: 1.5rem">
+    <input class="me-2" style="width: 50px" type="text" name="prefix" id="" maxlength="2">
+    <span class="me-2">-</span>
+    <input class="me-2" style="width: 100px" type="text" name="postfix" id="" maxlength="6">
+  </div>
+  <button type="submit" class="btn-primary btn btn-block">信箱認證號碼 送出</button>
+</form>
+
+<br>
+
+<p>沒有收到信箱認證信件?</p>
+<button id="sent-button" type="button" class="btn-secondary btn btn-block">重新寄送 認證信件</button>
+
+<script src="/javascripts/verify-form-submit.js"></script>

@@ -36,11 +36,8 @@ module.exports = {
       const hash = await bcrypt.hash(password, salt)
 
       // generate related validation material
-      const validationSalt = await bcrypt.genSalt(10)
       const validationTime = Date.now()
-      const validationCode = await bcrypt.hash(
-        `${name}@${validationTime}`, validationSalt
-      )
+      const validationCode = userServices.verificationCreated()
 
       await User.create({
         name: name || email,
@@ -63,6 +60,54 @@ module.exports = {
     req.flash('success_messages', '你已經成功登出了')
     req.logout()
     return res.redirect('/login')
+  },
+
+  verifyPage: (req, res) => {
+    return res.render('verify')
+  },
+
+  verify: async (req, res, next) => {
+    try {
+      const { status } = req.query
+      const user = await User.findByPk(req.user.id)
+      if (!user) throw new Error('沒有該使用者')
+
+      if (status === 'email_sent') {
+        // generate related validation material
+        const validationTime = Date.now()
+        const validationCode = userServices.verificationCreated()
+
+        await Promise.all([
+          user.update({ validationTime, validationCode }),
+          userServices.verificationSent(
+            user.email, validationCode
+          )
+        ])
+
+        req.flash('success_messages', '認證信件已經成功寄送')
+        return res.status(200).send()
+      }
+
+      if (status === 'email_verify') {
+        const { prefix, postfix } = req.query
+        const { validationCode, validationTime, isAdmin } = req.user
+        const incomingCode = `${prefix}-${postfix}`
+
+        const isActive = userServices.verificationCheck(
+          incomingCode, validationCode, validationTime
+        )
+
+        if (!isActive) {
+          req.flash('warning_messages', '認證失敗，請再重新驗證')
+          return res.redirect('back')
+        }
+        await user.update({ isActive })
+        const redirectPath = isAdmin ? '/admin/news' : '/news'
+        return res.redirect(redirectPath)
+      }
+
+      return res.render('verify')
+    } catch (err) { next(err) }
   },
 
   getUser: async (req, res, next) => {

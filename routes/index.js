@@ -19,6 +19,7 @@ router.post('/login', passport.authenticate(
 router.get('/logout', userController.logout)
 router.get('/register', userController.registerPage)
 router.post('/register', userController.register)
+router.get('/verify', authenticated, userController.verify)
 
 router.use('/news', news)
 router.use('/comments', authenticated, comment)
